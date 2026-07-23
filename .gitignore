@@ -34,5 +34,9 @@ Thumbs.db
 .playwright-mcp/
 test-results/
 
+# Screenshots and snapshots
+pocwu-homepage-snapshot.md
+pocwu-screenshot.png
+
 # Editor
 *.local
