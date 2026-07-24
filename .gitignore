@@ -30,6 +30,9 @@ Thumbs.db
 # TypeScript build info
 *.tsbuildinfo
 
+# Wrangler local state
+.wrangler/
+
 # Playwright
 .playwright-mcp/
 test-results/
@@ -37,6 +40,11 @@ test-results/
 # Screenshots and snapshots
 pocwu-homepage-snapshot.md
 pocwu-screenshot.png
+pocwu-live-screenshot.png
+deployment-details.txt
+pocwu-project-page.txt
+pocwu-settings.txt
+cloudflare-wnp-snapshot.txt
 
 # Editor
 *.local
