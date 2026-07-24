@@ -75,6 +75,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }),
     });
 
+    // Handle non-200 responses from GitHub before parsing JSON
+    if (!graphqlResp.ok) {
+      const errBody = await graphqlResp.text().catch(() => "Unknown GitHub error");
+      return json(
+        {
+          error: "GitHub API error",
+          status: graphqlResp.status,
+          details: errBody.slice(0, 200),
+        },
+        502,
+      );
+    }
+
     const result = (await graphqlResp.json()) as {
       data?: {
         repository?: {
@@ -104,7 +117,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       return json(
         {
           error: "GitHub API error",
-          details: result.errors?.[0]?.message ?? "Unknown error",
+          details: result.errors?.[0]?.message ?? "Empty data from GitHub API",
         },
         502,
       );
