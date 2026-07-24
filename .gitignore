@@ -33,6 +33,12 @@ Thumbs.db
 # Wrangler local state
 .wrangler/
 
+# Screenshots (root-level only)
+/pocwu-*.png
+/community-hub-live.png
+/login-button-visible.png
+/page-*.png
+
 # Playwright
 .playwright-mcp/
 test-results/
