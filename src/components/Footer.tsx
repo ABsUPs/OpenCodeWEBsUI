@@ -12,28 +12,43 @@ declare global {
 /**
  * Runs a MutationObserver that ensures the branding footer
  * is never removed or hidden. On tamper, redirects to /F/.
+ *
+ * Uses a debounce (200 ms) so React 18 StrictMode double-mount
+ * cycles don't trigger false-positive redirects.
  */
 function initFooterIntegrityGuard() {
   if (typeof window === "undefined") return;
   if (window.__absup_footer_integrity__) return;
   window.__absup_footer_integrity__ = true;
 
+  let redirectTimer: ReturnType<typeof setTimeout> | null = null;
+
   const checkFooterHealth = () => {
     const footer = document.getElementById(FOOTER_ID);
-    if (!footer) {
-      window.location.href = "/F/";
-      return;
+
+    // Footer is present AND visible → cancel any pending redirect
+    if (footer) {
+      const style = window.getComputedStyle(footer);
+      const isHidden =
+        style.display === "none" ||
+        style.opacity === "0" ||
+        style.visibility === "hidden" ||
+        footer.offsetHeight === 0;
+      if (!isHidden) {
+        if (redirectTimer) {
+          clearTimeout(redirectTimer);
+          redirectTimer = null;
+        }
+        return;
+      }
     }
 
-    const style = window.getComputedStyle(footer);
-    const isHidden =
-      style.display === "none" ||
-      style.opacity === "0" ||
-      style.visibility === "hidden" ||
-      footer.offsetHeight === 0;
-
-    if (isHidden) {
-      window.location.href = "/F/";
+    // Footer is missing or hidden — debounce redirect (200 ms)
+    // so React 18 StrictMode double-mounts don't false-positive.
+    if (!redirectTimer) {
+      redirectTimer = setTimeout(() => {
+        window.location.href = "/F/";
+      }, 200);
     }
   };
 
