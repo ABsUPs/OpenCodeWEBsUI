@@ -68,6 +68,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
         Accept: "application/json",
+        "User-Agent": "OpenCodeABsUI-UX/1.0",
       },
       body: JSON.stringify({
         query: DISCUSSIONS_QUERY,
