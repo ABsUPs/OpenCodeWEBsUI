@@ -48,6 +48,12 @@ const FEATURES: Feature[] = [
     route: "/T",
   },
   {
+    icon: "👥",
+    title: "Users Directory",
+    desc: "Browse all registered users of the platform. See who's online, view their profiles and connected devices, and discover the community behind the infrastructure.",
+    route: "/U",
+  },
+  {
     icon: "🗄️",
     title: "Server Directory",
     desc: "A public registry of all active GunDB relays, sandbox preview servers, and daemon nodes. Register your own server or discover community-run infrastructure with real-time status and uptime tracking.",
@@ -104,6 +110,7 @@ const ROUTES: RouteInfo[] = [
   { path: "/T", title: "Templates", desc: "Multi-agent template marketplace" },
   { path: "/C", title: "Community Hub", desc: "Discussions with real-time P2P sync" },
   { path: "/S", title: "Servers", desc: "Public server directory & registry" },
+  { path: "/U", title: "Users", desc: "Community user directory" },
   { path: "/F", title: "Feature Showcase", desc: "Project overview & feature documentation" },
 ];
 

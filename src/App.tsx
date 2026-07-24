@@ -10,6 +10,7 @@ const Sandbox = lazy(() => import("./pages/Sandbox"));
 const TemplateMarketplace = lazy(() => import("./pages/TemplateMarketplace"));
 const CommunityHub = lazy(() => import("./pages/CommunityHub"));
 const Servers = lazy(() => import("./pages/Servers"));
+const Users = lazy(() => import("./pages/Users"));
 const SecurityLanding = lazy(() => import("./pages/SecurityLanding"));
 
 // Minimal loading state — just a subtle pulse so layout stays stable
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/T" element={<TemplateMarketplace />} />
           <Route path="/C" element={<CommunityHub />} />
           <Route path="/S" element={<Servers />} />
+          <Route path="/U" element={<Users />} />
           <Route path="/F" element={<SecurityLanding />} />
           <Route path="*" element={<SecurityLanding />} />
         </Route>
