@@ -9,13 +9,23 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    sourcemap: true,
+    sourcemap: false, // Disable sourcemaps in production (save ~750KB)
+    minify: "esbuild", // Fast minification with esbuild
+    target: "es2020",
+    cssMinify: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ["react", "react-dom"],
-          router: ["react-router-dom"],
+          // Core vendor chunks — stable across builds
+          "vendor-react": ["react", "react-dom"],
+          "vendor-router": ["react-router-dom"],
+          // Cobe globe is heavy and only used on homepage — isolate it
+          "vendor-cobe": ["cobe"],
         },
+        // Compact chunk filenames
+        chunkFileNames: "assets/[hash].js",
+        entryFileNames: "assets/[hash].js",
+        // Aggressive tree-shaking
       },
     },
   },
