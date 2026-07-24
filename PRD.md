@@ -28,11 +28,11 @@
 
 
 
-\*\*OpenCodeABsUI/UX\*\* is an enterprise-grade, public OpenCode ecosystem plugin and hybrid infrastructure manager. It bridges local developer environments (PC, Mac, Linux, Mobile Termux, Docker, VPS) with a 24/7 serverless cloud runtime. 
+\*\*OpenCodeABsUI/UX\*\* is an enterprise-grade, public OpenCode ecosystem plugin and hybrid infrastructure manager. It bridges local developer environments (PC, Mac, Linux, Mobile Termux, Docker, VPS) with a 24/7 serverless cloud runtime via a decentralized, peer-to-peer data synchronization layer powered by GunDB.
 
 
 
-The system provides a SaaS-style Web UI featuring multi-agent company orchestration (`/o/`), isolated sandboxes (`/s/`), multi-device remote management (`/u/`), GitHub-based verification, and a 3D interactive global metrics dashboard powered by Cloudflare Workers and Cobe WebGL.
+The system provides a SaaS-style Web UI featuring multi-agent company orchestration (`/o/`), isolated sandboxes (`/s/`), multi-device remote management (`/u/`), GitHub-based verification, and a 3D interactive global metrics dashboard powered by Cloudflare Workers and Cobe WebGL — all underpinned by a real-time, offline-first GunDB graph network that syncs state across every local node and the cloud without requiring a central database server.
 
 
 
@@ -46,53 +46,38 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 ```text
 
-+---------------------------------------------------------------------------------+
+💻 Local Active Nodes            📡 GunDB P2P Graph Network           ☁️ Cloudflare / GitHub
+ (PC / Phone / Docker)           (Peer-to-Peer Data Syncing)           (Serverless & Storage)
+┌───────────────────────┐         ┌───────────────────────────┐     ┌───────────────────────┐
+│ • Heavy Processing    │ ◄─────► │ Real-Time Bi-Directional │ ◄─► │ • 24/7 API Gateway    │
+│ • Local GunDB Node    │  WebRTC │ DB Syncing Across Nodes  │ WS  │ • Private Fork Sync   │
+│ • OS Daemon           │         │ • Conflict-Free CRDT     │     │ • Cloudflare Workers  │
+│ • Offline-First Cache │         │ • Offline Queue & Replay │     │ • D1 / KV Storage     │
+└───────────────────────┘         └───────────────────────────┘     └───────────────────────┘
+                                         │
+                                         │ SEA (Security, Auth)
+                                         v
+                               🔐 Encrypted P2P Mesh
+                         (E2EE via GunDB SEA Layer)
 
-|                                 pocwu.pages.dev                                 |
-
-|              (Cloudflare Edge Proxy / Dynamic Multi-Route Engine)               |
-
-+-------+------------------+------------------+------------------+----------------+
-
-&#x20;       |                  |                  |                  |
-
-&#x20;       v                  v                  v                  v
-
-&#x20;   / (Home)          /u/{username}     /o/{org\_name}      /s/{project}
-
-&#x20; 3D Cobe Globe      Multi-Device UI    Org Showcase        Sandboxed Runtime
-
-&#x20; Live Metrics       Offline Snapshot   Workforce Stats     Preview/Live Server
-
-&#x20;       |                  |                  |                  |
-
-&#x20;       +------------------+------------------+------------------+
-
-&#x20;                                  |
-
-&#x20;                                  v
-
-&#x20;            +-------------------------------------------+
-
-&#x20;            |         Local OS Background Daemon        |
-
-&#x20;            |  (systemd / launchd / Task Scheduler)     |
-
-&#x20;            +---------------------+---------------------+
-
-&#x20;                                  |
-
-&#x20;            +---------------------+---------------------+
-
-&#x20;            |                                           |
-
-&#x20;            v                                           v
-
-&#x20;  Parallel Pipeline Engine                 Hybrid Serverless Cloud
-
-&#x20; (Test + Optimize Dual Stream)           (Cloudflare Workers / Vercel)
-
-
+                                         │
+                    ┌────────────────────┼────────────────────┐
+                    │                    │                    │
+                    v                    v                    v
+          ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+          │  pocwu.pages.dev │ │  /u/{username}   │ │  /o/ & /s/       │
+          │  (Home / Globe)  │ │  Multi-Device    │ │  Org / Sandbox   │
+          │  Live Metrics    │ │  Telemetry       │ │  Showcase        │
+          └──────────────────┘ └──────────────────┘ └──────────────────┘
+                    │                    │                    │
+                    └────────────────────┼────────────────────┘
+                                         │
+                                         v
+                            ┌─────────────────────────┐
+                            │   GitHub Private Fork   │
+                            │   (state-backup branch) │
+                            │   Offline Fallback      │
+                            └─────────────────────────┘
 
 ```
 
@@ -418,7 +403,95 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 
 
-\### 3.9. OS-Level Background Daemon Engine
+\### 3.9. GunDB Decentralized P2P Graph Network
+
+
+
+\* \*\*Overview:\*\*
+
+\* GunDB serves as the universal real-time data synchronization fabric connecting all local active nodes (PC, Phone, Docker, VPS) with Cloudflare serverless endpoints through a peer-to-peer graph database network.
+
+\* All state — device telemetry, community posts, org data, sandbox sessions — flows through the GunDB graph and is automatically replicated across every online peer without requiring a central database server.
+
+
+
+\* \*\*P2P Data Layer:\*\*
+
+\* Utilizes GunDB (Graph Database) for real-time, peer-to-peer, offline-first data synchronization across local nodes (PC, Phone, VPS) and Cloudflare Edge Workers.
+
+\* Each node runs a local GunDB instance that connects to other peers via WebRTC (browser-to-browser) and WebSocket (browser-to-relay / relay-to-relay).
+
+\* The graph data model allows natural representation of interconnected entities: users, devices, orgs, projects, posts, comments — all as nodes with relational edges.
+
+
+
+\* \*\*Conflict-Free State Sync (CRDT):\*\*
+
+\* GunDB's built-in Conflict-Free Replicated Data Type (CRDT) algorithm automatically resolves state conflicts when offline nodes come back online.
+
+\* No merge conflicts, no manual reconciliation — the last-write-wins and HAM (Happens-After-Merge) strategy ensures eventual consistency across the entire mesh.
+
+\* Operations queued offline are replayed in causal order upon reconnection, preserving the integrity of the state graph.
+
+
+
+\* \*\*Zero-Cost Storage Persistence:\*\*
+
+\* GunDB graph snapshots are periodically serialized and persisted to the user's \*\*GitHub Private Fork\*\* (`state-backup` branch) as JSON blobs for offline fallback rendering.
+
+\* When all user devices are offline, Cloudflare Functions serve the latest snapshot from the GitHub fork as a read-only fallback.
+
+\* Browser-side GunDB data is persisted to IndexedDB for instant cold-start loading without network round-trips.
+
+
+
+\* \*\*Encrypted P2P Mesh (SEA):\*\*
+
+\* All peer-to-peer communication uses GunDB's built-in \*\*Security, Encryption & Authorization (SEA)\*\* layer.
+
+\* Each user's identity is bound to their GitHub OAuth session — a derived SEA keypair is generated from the OAuth token and used to sign/encrypt all graph operations.
+
+\* Data is end-to-end encrypted between peers; Cloudflare relays never see plaintext payloads.
+
+
+
+\* \*\*Architecture Flow:\*\*
+
+\* \*\*1. Pairing:\*\* When a new device joins, it authenticates via GitHub OAuth, retrieves the user's SEA public key from SESSIONS\_KV, and establishes an encrypted WebRTC/WS connection to existing peers.
+
+\* \*\*2. Publishing:\*\* Any node writes data to the local GunDB instance. The change propagates instantly to all connected peers (including Cloudflare edge nodes) via the P2P mesh.
+
+\* \*\*3. Persisting:\*\* Cloudflare edge GunDB relay nodes write periodic snapshots to D1 (structured queries) and to the user's GitHub Private Fork (full graph JSON backup).
+
+\* \*\*4. Recovering:\*\* When a node that has been offline reconnects, GunDB's CRDT logic replays the missed operations and merges any divergent state automatically.
+
+
+
+\* \*\*Integration Points:\*\*
+
+\* \*\*Community Hub (/C/):\*\* Posts and comments are GunDB graph nodes. When a user creates a post, it syncs instantly to all other online users viewing the hub. Offline users see cached IndexedDB data.
+
+\* \*\*Multi-Device (/u/):\*\* Device telemetry (CPU, RAM, uptime, active sessions) streams through GunDB in real-time. Each browser tab or daemon instance is a graph peer.
+
+\* \*\*Org Sandbox (/o/, /s/):\*\* Sandbox state, workflow status, and agent metrics are replicated across org members' devices via the P2P mesh.
+
+\* \*\*Templates (/T/):\*\* Template metadata and download counts are synced across edge nodes for low-latency global access.
+
+
+
+\* \*\*Relay Node Strategy:\*\*
+
+\* \*\*Cloudflare Workers as Gun Relays:\*\* Each Cloudflare edge location that receives a request can act as a lightweight GunDB relay — forwarding messages between peers that cannot establish direct WebRTC connections (NAT traversal).
+
+\* \*\*Fallback to a lightweight Node.js relay\*\* running on the user's primary local machine (the OS daemon) ensures connectivity even when Cloudflare is unreachable.
+
+\* The relay is stateless and does not store the graph — all state lives on the peers and in IndexedDB / GitHub backups.
+
+
+
+\---
+
+\### 3.10. OS-Level Background Daemon Engine
 
 
 
@@ -506,6 +579,8 @@ opencode-abs-ui-ux/
 
 │   ├── db-sync.ts                   # Bi-directional local-to-cloud database sync manager
 
+│   ├── gun-db-sync.ts              # GunDB P2P graph node — local peer, SEA encryption, CRDT sync
+
 │   ├── multi-device-manager.ts      # Active node registry \& device selector broker
 
 │   ├── company-sandbox.ts           # Org profile wizard, sandbox isolation, \& preview engine
@@ -514,7 +589,9 @@ opencode-abs-ui-ux/
 
 ├── cloudflare/
 
-│   └── cloudflare-worker.js         # Edge worker handling /u/, /o/, /s/, /T/, /C/, /F/ routes
+│   ├── cloudflare-worker.js         # Edge worker handling /u/, /o/, /s/, /T/, /C/, /F/ routes
+
+│   └── gun-relay-worker.js          # GunDB WebSocket relay — forwards P2P messages between peers, persists snapshots to D1 + GitHub Fork
 
 └── package.json                     # NPM package metadata for opencode-abs-ui-ux
 

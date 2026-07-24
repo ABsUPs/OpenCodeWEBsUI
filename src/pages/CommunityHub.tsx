@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useGunSync, type GunPost } from "../hooks/useGunSync";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -46,7 +47,7 @@ interface Comment {
   createdAt: string;
 }
 
-type DiscussionItem = GitHubDiscussion | LocalPost;
+type DiscussionItem = GitHubDiscussion | LocalPost | GunPost;
 
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
@@ -463,7 +464,7 @@ function PostCard({
                 GitHub
               </span>
             )}
-            {item.isAnswered && (
+            {"isAnswered" in item && (item as LocalPost).isAnswered && (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                 <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                 Answered
@@ -570,6 +571,13 @@ export default function CommunityHub() {
   const [deletingPost, setDeletingPost] = useState<LocalPost | null>(null);
   const [viewingPost, setViewingPost] = useState<LocalPost | null>(null);
 
+  const { mergeGunPosts, publishCreated, publishDeleted } = useGunSync({
+    onGunUpdate: () => {
+      // When GunDB delivers a new post in real-time, re-merge with current items
+      setItems((prev) => mergeGunPosts(prev));
+    },
+  });
+
   const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -585,8 +593,8 @@ export default function CommunityHub() {
       const gh: DiscussionItem[] = (ghData.discussions ?? []).map((d) => ({ ...d, _source: "github" as const }));
       const local: DiscussionItem[] = (localData.posts ?? []).map((p) => ({ ...p, _source: "local" as const }));
 
-      // Merge and sort by createdAt descending
-      const merged = [...gh, ...local].sort(
+      // Merge REST data with GunDB-synced posts
+      const merged = mergeGunPosts([...gh, ...local]).sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
 
@@ -596,7 +604,7 @@ export default function CommunityHub() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mergeGunPosts]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
@@ -616,6 +624,9 @@ export default function CommunityHub() {
       const err = await r.json().catch(() => ({}));
       throw new Error((err as { error?: string }).error ?? "Failed to create");
     }
+    const created = (await r.json()) as { post: LocalPost };
+    // Publish to GunDB for real-time sync
+    publishCreated(created.post);
     await fetchAll();
   };
 
@@ -645,6 +656,8 @@ export default function CommunityHub() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!r.ok) throw new Error("Delete failed");
+    // Remove from GunDB graph
+    publishDeleted(deletingPost.id);
     setDeletingPost(null);
     setViewingPost(null);
     await fetchAll();
@@ -658,9 +671,15 @@ export default function CommunityHub() {
           <h1 className="text-3xl font-bold tracking-tight">
             Community <span className="text-brand-400">Hub</span>
           </h1>
-          <p className="mt-1 text-sm text-white/40">
-            {loading ? "Loading…" : `${items.length} discussion${items.length === 1 ? "" : "s"}`}
-          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <p className="text-sm text-white/40">
+              {loading ? "Loading…" : `${items.length} discussion${items.length === 1 ? "" : "s"}`}
+            </p>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live
+            </span>
+          </div>
         </div>
         {user && (
           <button
