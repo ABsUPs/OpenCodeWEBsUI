@@ -48,6 +48,12 @@ const FEATURES: Feature[] = [
     route: "/T",
   },
   {
+    icon: "🗄️",
+    title: "Server Directory",
+    desc: "A public registry of all active GunDB relays, sandbox preview servers, and daemon nodes. Register your own server or discover community-run infrastructure with real-time status and uptime tracking.",
+    route: "/S",
+  },
+  {
     icon: "💬",
     title: "Community Hub",
     desc: "Interactive discussion forum powered by GitHub Discussions API + local D1 database. Create, edit, delete posts and comments with real-time GunDB P2P sync across all connected users.",
@@ -97,6 +103,7 @@ const ROUTES: RouteInfo[] = [
   { path: "/s/{org}/{project}", title: "Sandbox", desc: "Isolated preview & live server" },
   { path: "/T", title: "Templates", desc: "Multi-agent template marketplace" },
   { path: "/C", title: "Community Hub", desc: "Discussions with real-time P2P sync" },
+  { path: "/S", title: "Servers", desc: "Public server directory & registry" },
   { path: "/F", title: "Feature Showcase", desc: "Project overview & feature documentation" },
 ];
 

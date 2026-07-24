@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/T", label: "Templates" },
   { to: "/C", label: "Community" },
+  { to: "/S", label: "Servers" },
   { to: "/F", label: "Features" },
 ] as const;
 
