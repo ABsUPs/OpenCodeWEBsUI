@@ -32,6 +32,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "User-Agent": "OpenCodeABsUI-UX/1.0",
       },
       body: JSON.stringify({
         client_id: clientId,
@@ -40,6 +41,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }),
     }
   );
+
+  if (!tokenResp.ok) {
+    const errText = await tokenResp.text().catch(() => "Unknown error");
+    return json({ error: "Token exchange failed", details: errText.slice(0, 200) }, 502);
+  }
 
   const tokenData = (await tokenResp.json()) as {
     access_token?: string;
@@ -55,8 +61,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // Fetch user info
   const userResp = await fetch("https://api.github.com/user", {
-    headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    headers: {
+      Authorization: `Bearer ${tokenData.access_token}`,
+      "User-Agent": "OpenCodeABsUI-UX/1.0",
+    },
   });
+  if (!userResp.ok) {
+    return json({ error: "Failed to fetch GitHub user" }, 502);
+  }
   const user = (await userResp.json()) as {
     login: string;
     id: number;
@@ -66,8 +78,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // Fetch user's orgs for namespace validation
   const orgsResp = await fetch("https://api.github.com/user/orgs", {
-    headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    headers: {
+      Authorization: `Bearer ${tokenData.access_token}`,
+      "User-Agent": "OpenCodeABsUI-UX/1.0",
+    },
   });
+  if (!orgsResp.ok) {
+    return json({ error: "Failed to fetch GitHub orgs" }, 502);
+  }
   const orgs = (await orgsResp.json()) as Array<{ login: string }>;
 
   // Create session token
