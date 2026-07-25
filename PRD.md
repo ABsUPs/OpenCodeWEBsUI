@@ -500,8 +500,8 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 \* \*\*\[💬 Community Hub\]\*\* (Page Header — Interactive Primary Action Button):
 \* \* The main `💬 Community Hub` page heading is itself a clickable primary action button.
 \* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment.
-\* \* \*\*Target External Mapping:\*\* Clicking the header or navigating to `/C/💬` directly routes to the official discussions repository: `https://github.com/ABsUPs/OpenCodeWEBsUI/discussions`.
-\* \* This provides a permanent, friendly alias that is easy to remember and share.
+\* \* \*\*Internal SPA Navigation:\*\* Clicking the header or navigating to `/C/💬` internally routes to the Root Hub at `/C/ABsUPs/CommunityHub`. All GitHub Discussions are fetched server-side via API and rendered inline with the app's design system — no external redirect, everything stays within the SPA.
+\* \* This provides a permanent, friendly alias that is easy to remember and share, while keeping all community content natively in-app.
 
 \* \*\*Integrated Search & Multi-Level Filtering:\*\*
 \* \* \*\*\[🌐 Global\]\*\* — Toggle to display global user/org community forks.

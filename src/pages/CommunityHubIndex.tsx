@@ -319,7 +319,7 @@ export default function CommunityHubIndex() {
         <Link
           to="/C/💬"
           className="group inline-flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3 transition-all hover:border-brand-500/30 hover:bg-brand-500/[0.03] hover:shadow-lg hover:shadow-brand-500/5"
-          title="Go to GitHub Discussions → github.com/ABsUPs/OpenCodeWEBsUI/discussions"
+          title="Go to the Root Hub discussions"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-xl shadow-lg shadow-brand-500/20 transition-all group-hover:scale-110 group-hover:shadow-brand-500/30">
             💬
@@ -329,11 +329,11 @@ export default function CommunityHubIndex() {
               Community <span className="text-brand-400">Hub</span>
             </h1>
             <p className="text-xs text-white/30 transition-colors group-hover:text-brand-400/60">
-              Click to open GitHub Discussions ↗
+              Open the Root Hub →
             </p>
           </div>
           <svg className="ml-auto h-5 w-5 shrink-0 text-white/20 transition-all group-hover:translate-x-1 group-hover:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
         </Link>
         <p className="mt-2 text-sm text-white/40">

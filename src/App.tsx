@@ -1,22 +1,6 @@
-import { lazy, Suspense, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
-
-// ─── External Redirect: /C/💬 → GitHub Discussions ─────────
-function CommunityHubDiscussionsRedirect() {
-  useEffect(() => {
-    window.location.href = "https://github.com/ABsUPs/OpenCodeWEBsUI/discussions";
-  }, []);
-  // Render a brief loading state while redirecting
-  return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
-        <span className="text-sm text-white/30">Redirecting to GitHub Discussions…</span>
-      </div>
-    </div>
-  );
-}
 
 // Route-level code splitting — each page loads only when navigated to
 const Home = lazy(() => import("./pages/Home"));
@@ -52,7 +36,7 @@ export default function App() {
           <Route path="/o/:org/:company" element={<OrgShowcase />} />
           <Route path="/s/:org/:project" element={<Sandbox />} />
           <Route path="/T" element={<TemplateMarketplace />} />
-          <Route path="/C/💬" element={<CommunityHubDiscussionsRedirect />} />
+          <Route path="/C/💬" element={<Navigate to="/C/ABsUPs/CommunityHub" replace />} />
           <Route path="/C/:username/:project" element={<CommunityHub />} />
           <Route path="/C/:username" element={<CommunityHub />} />
           <Route path="/C" element={<CommunityHubIndex />} />
