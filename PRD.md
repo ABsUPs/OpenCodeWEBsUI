@@ -497,10 +497,10 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 \* The Community Hub Directory at `/C/` features a fully interactive header that doubles as the primary action button:
 
-\* \*\*\[💬 Community Hub\]\*\* (Page Header):
-\* \* The main `💬 Community Hub` page heading is a static header element.
-\* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment alias for the directory page.
-\* \* All GitHub Discussions content is fetched via the internal API (`/api/discussions`) and rendered natively with the app's design system — no external redirects, no iframes.
+\* \*\*\[💬 Community Hub\]\*\* (Page Header — Interactive Primary Action Button):
+\* \* The main `💬 Community Hub` page heading is a clickable primary action button.
+\* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment.
+\* \* \*\*Target External Mapping:\*\* Navigating to `/C/💬` renders the main Community Hub discussions view, which fetches content from the official discussions repository (`github.com/ABsUPs/OpenCodeWEBsUI/discussions`) via the internal API (`/api/discussions`) and renders it natively with the app's design system — no browser redirects, no iframes.
 
 \* \*\*Integrated Search & Multi-Level Filtering:\*\*
 \* \* \*\*\[🌐 Global\]\*\* — Toggle to display global user/org community forks.

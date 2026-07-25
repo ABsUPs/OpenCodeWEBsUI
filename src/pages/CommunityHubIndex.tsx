@@ -314,21 +314,27 @@ export default function CommunityHubIndex() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16 pb-24">
-      {/* ── Header ─────────────────────────────────────────── */}
+      {/* ── Header (Primary Action Button ➔ /C/💬) ─────────── */}
       <div className="mb-6">
-        <div className="inline-flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-xl shadow-lg shadow-brand-500/20">
+        <Link
+          to="/C/💬"
+          className="group inline-flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3 transition-all hover:border-brand-500/30 hover:bg-brand-500/[0.03] hover:shadow-lg hover:shadow-brand-500/5"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-xl shadow-lg shadow-brand-500/20 transition-all group-hover:scale-110 group-hover:shadow-brand-500/30">
             💬
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white/90">
-              Community <span className="text-brand-400">Hubs</span>
+            <h1 className="text-xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">
+              Community <span className="text-brand-400">Hub</span>
             </h1>
-            <p className="text-xs text-white/30">
-              GitHub Discussions powered — all content loads natively in-app
+            <p className="text-xs text-white/30 transition-colors group-hover:text-brand-400/60">
+              Primary Button &bull; /C/💬 &bull; GitHub Discussions
             </p>
           </div>
-        </div>
+          <svg className="ml-auto h-5 w-5 shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
         <p className="mt-2 text-sm text-white/40">
           {loading ? "Loading…" : `${filtered.length} hub${filtered.length === 1 ? "" : "s"}`}
         </p>

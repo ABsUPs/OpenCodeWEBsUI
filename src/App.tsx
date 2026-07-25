@@ -36,7 +36,7 @@ export default function App() {
           <Route path="/o/:org/:company" element={<OrgShowcase />} />
           <Route path="/s/:org/:project" element={<Sandbox />} />
           <Route path="/T" element={<TemplateMarketplace />} />
-          <Route path="/C/💬" element={<CommunityHubIndex />} />
+          <Route path="/C/💬" element={<CommunityHub />} />
           <Route path="/C/:username/:project" element={<CommunityHub />} />
           <Route path="/C/:username" element={<CommunityHub />} />
           <Route path="/C" element={<CommunityHubIndex />} />

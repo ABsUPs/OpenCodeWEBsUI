@@ -573,13 +573,14 @@ export default function CommunityHub() {
   const [deletingPost, setDeletingPost] = useState<LocalPost | null>(null);
   const [viewingPost, setViewingPost] = useState<LocalPost | null>(null);
 
-  // Derive scope display
+  // Derive scope display (💬 emoji = global alias for the main discussions view)
+  const effectiveUsername = username === "💬" ? undefined : username;
   const isProjectHub = !!project;
-  const isUserHub = !!username && !project;
+  const isUserHub = !!effectiveUsername && !project;
   const scopeLabel = isProjectHub
-    ? `${username}/${project}`
+    ? `${effectiveUsername}/${project}`
     : isUserHub
-      ? `@${username}`
+      ? `@${effectiveUsername}`
       : "Global";
 
   const { mergeGunPosts, publishCreated, publishDeleted } = useGunSync({
@@ -593,8 +594,8 @@ export default function CommunityHub() {
     setLoading(true);
     setError(null);
     try {
-      const scopeParams = username
-        ? `&scopeUser=${encodeURIComponent(username)}${project ? `&scopeProject=${encodeURIComponent(project)}` : ""}`
+      const scopeParams = effectiveUsername
+        ? `&scopeUser=${encodeURIComponent(effectiveUsername)}${project ? `&scopeProject=${encodeURIComponent(project)}` : ""}`
         : "";
       const [ghResp, localResp] = await Promise.all([
         fetch(`/api/discussions?first=30${scopeParams}`),
@@ -698,11 +699,13 @@ export default function CommunityHub() {
             )}
           </div>
           <p className="mt-1 text-sm text-white/40">
-            {isProjectHub
-              ? `Discussions scoped to the ${scopeLabel} project.`
-              : isUserHub
-                ? `Community discussions for ${scopeLabel}.`
-                : "All community discussions across the ecosystem."}
+            {username === "💬"
+              ? "Main Community Hub — GitHub Discussions powered, all content loads natively in-app."
+              : isProjectHub
+                ? `Discussions scoped to the ${scopeLabel} project.`
+                : isUserHub
+                  ? `Community discussions for ${scopeLabel}.`
+                  : "All community discussions across the ecosystem."}
           </p>
           <div className="mt-1 flex items-center gap-2">
             <p className="text-sm text-white/40">
