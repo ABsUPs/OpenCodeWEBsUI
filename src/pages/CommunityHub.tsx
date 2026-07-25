@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useGunSync, type GunPost } from "../hooks/useGunSync";
 
@@ -562,6 +563,7 @@ function EmptyState() {
 
 export default function CommunityHub() {
   const { user } = useAuth();
+  const { username, project } = useParams<{ username?: string; project?: string }>();
   const [items, setItems] = useState<DiscussionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -570,6 +572,15 @@ export default function CommunityHub() {
   const [editingPost, setEditingPost] = useState<LocalPost | null>(null);
   const [deletingPost, setDeletingPost] = useState<LocalPost | null>(null);
   const [viewingPost, setViewingPost] = useState<LocalPost | null>(null);
+
+  // Derive scope display
+  const isProjectHub = !!project;
+  const isUserHub = !!username && !project;
+  const scopeLabel = isProjectHub
+    ? `${username}/${project}`
+    : isUserHub
+      ? `@${username}`
+      : "Global";
 
   const { mergeGunPosts, publishCreated, publishDeleted } = useGunSync({
     onGunUpdate: () => {
@@ -582,9 +593,12 @@ export default function CommunityHub() {
     setLoading(true);
     setError(null);
     try {
+      const scopeParams = username
+        ? `&scopeUser=${encodeURIComponent(username)}${project ? `&scopeProject=${encodeURIComponent(project)}` : ""}`
+        : "";
       const [ghResp, localResp] = await Promise.all([
-        fetch("/api/discussions?first=30"),
-        fetch("/api/posts?limit=50"),
+        fetch(`/api/discussions?first=30${scopeParams}`),
+        fetch(`/api/posts?limit=50${scopeParams}`),
       ]);
 
       const ghData = ghResp.ok ? await ghResp.json() as { discussions: GitHubDiscussion[] } : { discussions: [] };
@@ -668,9 +682,28 @@ export default function CommunityHub() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Community <span className="text-brand-400">Hub</span>
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Community <span className="text-brand-400">Hub</span>
+            </h1>
+            {isProjectHub && (
+              <span className="rounded-full bg-brand-600/10 px-2.5 py-0.5 text-xs font-medium text-brand-400">
+                📁 {scopeLabel}
+              </span>
+            )}
+            {isUserHub && (
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                🌐 {scopeLabel}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm text-white/40">
+            {isProjectHub
+              ? `Discussions scoped to the ${scopeLabel} project.`
+              : isUserHub
+                ? `Community discussions for ${scopeLabel}.`
+                : "All community discussions across the ecosystem."}
+          </p>
           <div className="mt-1 flex items-center gap-2">
             <p className="text-sm text-white/40">
               {loading ? "Loading…" : `${items.length} discussion${items.length === 1 ? "" : "s"}`}

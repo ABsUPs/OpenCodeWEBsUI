@@ -1,1 +1,2 @@
-# SPA fallback — handled natively by Cloudflare Pages
+# SPA fallback — all unmatched paths serve index.html
+/* /index.html 200

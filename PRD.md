@@ -491,7 +491,97 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 \---
 
-\### 3.10. OS-Level Background Daemon Engine
+\### 3.11. Community Hub Dynamic Routing & Smart Ranking (`/C/`)
+
+\* \*\*Hub Header-as-Button Navigation:\*\*
+
+\* The Community Hub Directory at `/C/` features a fully interactive header that doubles as the primary action button:
+
+\* \*\*\[💬 Community Hub\]\*\* (Page Header — Interactive Primary Action Button):
+\* \* The main `💬 Community Hub` page heading is itself a clickable primary action button.
+\* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment.
+\* \* \*\*Target External Mapping:\*\* Clicking the header or navigating to `/C/💬` directly routes to the official discussions repository: `https://github.com/ABsUPs/OpenCodeWEBsUI/discussions`.
+\* \* This provides a permanent, friendly alias that is easy to remember and share.
+
+\* \*\*Integrated Search & Multi-Level Filtering:\*\*
+\* \* \*\*\[🌐 Global\]\*\* — Toggle to display global user/org community forks.
+\* \* \*\*\[📁 Projects\]\*\* — Toggle to display specific project-level community hubs.
+\* \* \*\*\[🔍 Search...\]\*\* — Real-time search filter that matches against GitHub usernames, organization names, and project titles simultaneously.
+
+\* \*\*Immutable System Smart Rank:\*\* `pocwu.pages.dev/C/ABsUPs/CommunityHub` remains permanently anchored at position #1.
+
+\* \*\*Sort & Filter Engine:\*\*
+
+\* Below the navigation header, a dedicated toolbar row provides advanced sorting and filtering:
+
+\* \*\*\[🔽 Sort: System Smart Rank\]\*\* — Dropdown with the following sort options:
+\* \* \*\*System Smart Rank\*\* (Default) — Immutable algorithmic order anchored by Root Hub at position #1.
+\* \* \*\*Most Active Members\*\* — Hubs ranked by highest active participant count.
+\* \* \*\*Top GitHub Stars & Forks\*\* — Hubs ranked by combined GitHub star and fork count.
+\* \*\*Recently Created\*\* — Newest hubs first, based on creation date.
+
+\* \*\*\[🏷️ Tag: All\]\*\* — Filter dropdown to narrow by discussion thread types:
+\* \* \*\*All\*\* (Default) — No tag filter applied.
+\* \* \*\*Templates\*\* — Hubs with template-related discussions.
+\* \* \*\*Features\*\* — Hubs with feature request discussions.
+\* \* \*\*Showcase\*\* — Hubs with showcase / portfolio discussions.
+\* \* \*\*Bug Reports\*\* — Hubs with bug report discussions.
+
+\* \*\*\[⚡ Status: All Active\]\*\* — Filter by hub activity status (reserved for future use, currently defaults to all active hubs).
+
+
+
+\* \*\*Dynamic Community URL Routing:\*\*
+
+\* \*\*Hub Directory:\*\* `pocwu.pages.dev/C` — Lists all community hubs with ranking.
+
+\* \*\*Personal/Org Global Hub:\*\* `pocwu.pages.dev/C/{GitHub_Username_or_OrgName}` — The community hub for a specific user or organization, showing their discussions and project hubs.
+
+\* \*\*Specific Project Hub:\*\* `pocwu.pages.dev/C/{GitHub_Username_or_OrgName}/{Project_Name}` — A project-scoped community hub, showing discussions limited to that project.
+
+\* \*\*Root Hub:\*\* `pocwu.pages.dev/C/ABsUPs/CommunityHub` — The canonical root hub, permanently fixed at position #1 in rankings.
+
+
+
+\* \*\*Automated Repository Forking:\*\*
+
+\* When a user enables the \*\*🌐 Global Community\*\* toggle for the first time, the system automatically creates a GitHub Fork of `github.com/ABsUPs/CommunityHub` into the authenticated user's personal account or organization.
+
+\* The fork becomes the user's personal community hub, populated with their discussions and project hubs.
+
+\* Subsequent visits to `/C/{username}` render content from the user's fork.
+
+
+
+\* \*\*System-Driven Smart Ranking (Immutable):\*\*
+
+\* \*\*Top Fixed Root:\*\* `pocwu.pages.dev/C/ABsUPs/CommunityHub` (`github.com/ABsUPs/CommunityHub`) is permanently anchored at position \#1 in all hub listings. This position is immutable and cannot be overridden.
+
+\* \*\*Algorithmic Ranking:\*\* All subsequent community hubs are ranked dynamically by the system based on:
+
+\* \*\*Member Engagement:\*\* Active discussion threads, comment velocity, and participant count.
+
+\* \*\*Discussion Volume:\*\* Total posts, replies, and daily active conversations.
+
+\* \*\*Repository Stars & Forks:\*\* GitHub star count, fork count, and recent commit activity.
+
+\* \*\*Manual override is strictly disallowed.\*\* Rankings are computed server-side and cannot be influenced by users.
+
+
+
+\* \*\*Integration with GunDB P2P Sync:\*\*
+
+\* Each community hub's posts and comments are published to the GunDB graph under a namespaced key: `community_hub:{username}:{project}`.
+
+\* Real-time cross-hub sync ensures that updates in one hub propagate to all subscribers of that hub via the GunDB P2P mesh.
+
+\* Offline users see cached IndexedDB data scoped to their last-visited hub.
+
+
+
+\---
+
+\### 3.12. OS-Level Background Daemon Engine
 
 
 
@@ -541,7 +631,15 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 | \*\*`/T/`\*\* | Template Marketplace | Public repository for sharing multi-agent templates and OpenCode setups. |
 
-| \*\*`/C/`\*\* | Community Hub | Discussion forum powered directly by GitHub Discussions API. |
+| \*\*`/C/`\*\* | Community Hub Directory | Global hub directory with smart ranking, search, and Global/Project toggles. |
+
+| \*\*`/C/💬`\*\* | External Redirect | Internal route alias that redirects to official GitHub Discussions (`github.com/ABsUPs/OpenCodeWEBsUI/discussions`). |
+
+| \*\*`/C/{username}`\*\* | User/Org Community Hub | Personal or organization community hub with discussions and project hubs. |
+
+| \*\*`/C/{username}/{project}`\*\* | Project Community Hub | Project-scoped community hub with discussions limited to that project. |
+
+| \*\*`/C/ABsUPs/CommunityHub`\*\* | Root Hub (Fixed #1) | Canonical root community hub permanently anchored at position #1. |
 
 | \*\*`/F/`\*\* | Security Landing Page | Fallback landing page for security restrictions, invalid access, or DOM tampering. |
 
