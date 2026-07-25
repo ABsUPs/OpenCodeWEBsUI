@@ -497,11 +497,10 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 \* The Community Hub Directory at `/C/` features a fully interactive header that doubles as the primary action button:
 
-\* \*\*\[💬 Community Hub\]\*\* (Page Header — Interactive Primary Action Button):
-\* \* The main `💬 Community Hub` page heading is itself a clickable primary action button.
-\* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment.
-\* \* \*\*Target External Mapping:\*\* Clicking the header or navigating to `/C/💬` directly routes to the official discussions repository: `https://github.com/ABsUPs/OpenCodeWEBsUI/discussions`.
-\* \* This provides a permanent, friendly alias that is easy to remember and share.
+\* \*\*\[💬 Community Hub\]\*\* (Page Header):
+\* \* The main `💬 Community Hub` page heading is a static header element.
+\* \* \*\*Internal Route Alias:\*\* `/C/💬` — The emoji character `💬` acts as a routable path segment alias for the directory page.
+\* \* All GitHub Discussions content is fetched via the internal API (`/api/discussions`) and rendered natively with the app's design system — no external redirects, no iframes.
 
 \* \*\*Integrated Search & Multi-Level Filtering:\*\*
 \* \* \*\*\[🌐 Global\]\*\* — Toggle to display global user/org community forks.
@@ -633,7 +632,7 @@ The system provides a SaaS-style Web UI featuring multi-agent company orchestrat
 
 | \*\*`/C/`\*\* | Community Hub Directory | Global hub directory with smart ranking, search, and Global/Project toggles. |
 
-| \*\*`/C/💬`\*\* | External Redirect | Internal route alias that redirects to official GitHub Discussions (`github.com/ABsUPs/OpenCodeWEBsUI/discussions`). |
+| \*\*`/C/💬`\*\* | Community Hub Directory | Internal route alias for the directory page. All content renders natively via API — no external redirect. |
 
 | \*\*`/C/{username}`\*\* | User/Org Community Hub | Personal or organization community hub with discussions and project hubs. |
 
