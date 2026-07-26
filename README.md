@@ -223,85 +223,20 @@ Your site will be live at `https://pocwu.pages.dev`.
 
 ## Project Structure
 
-```
-OpenCodeWEBsUI/
-├── OpenCodeWEBsPRD/            # 📁 Strict local PRD storage (gitignored, never synced)
-│   ├── PRD.md                  #     Master PRD — single source of truth
-│   ├── universal-engine.md     #     Universal Coding Engine full spec & pipeline
-│   ├── ToDo.md                 #     Roadmap index → PRD.md §8
-│   ├── Logic.md                #     Backend logic index → PRD.md §§3–6
-│   ├── Design.md               #     UI/UX design index → PRD.md §5
-│   ├── Community_Hub.md        #     Community hub index → PRD.md §4.7
-│   └── Security_Integrity.md   #     Security & privacy index → PRD.md §§4.1, 4.2, 7
-├── src/
-│   ├── main.tsx                # App entry — routing, providers, global layout
-│   ├── prd-orchestrator.ts     # 📋 PRD lifecycle: path resolution, .gitignore, auto-sweep,
-│   │                           #     subject router, isolated write
-│   ├── background-daemon.ts    # Cross-platform OS service installer (systemd/launchd/PM2)
-│   ├── footer-integrity.ts     # Mandatory branding wrapper & MutationObserver
-│   ├── github-auth-fork.ts     # GitHub OAuth, org owner validation, private fork engine
-│   ├── hybrid-deployer.ts      # Serverless deployment with multi-account rotation
-│   ├── db-sync.ts              # Bi-directional local-to-cloud database sync manager
-│   ├── gun-db-sync.ts          # GunDB P2P graph node — SEA encryption, CRDT sync
-│   ├── multi-device-manager.ts # Active node registry & device selector broker
-│   ├── company-sandbox.ts      # Org profile wizard, sandbox isolation, preview engine
-│   ├── task-parallelizer.ts    # Task decomposition & dual-stream concurrent pipeline
-│   ├── universal-engine.ts     # Universal Coding Language Support Engine entry
-│   ├── polyglot/               # Universal Engine submodules
-│   │   ├── language-detector.ts    # Extension parser, shebang detector, categorizer
-│   │   ├── tree-sitter-wasm.ts     # Dynamic WASM AST loader for polyglot languages
-│   │   ├── universal-runner.ts     # Unified execution manager (WASM / Docker)
-│   │   └── transpiler.ts           # Cross-language translation & legacy converter
-│   ├── components/             # Reusable UI components
-│   │   ├── Layout.tsx          # App shell with nav + footer
-│   │   ├── FooterGuard.tsx     # DOM integrity observer
-│   │   ├── GlassCard.tsx       # Reusable glassmorphism card
-│   │   └── Globe.tsx           # Cobe WebGL 3D globe wrapper
-│   ├── pages/                  # Route-level page components
-│   │   ├── Home.tsx            # 3D globe dashboard
-│   │   ├── CommunityHub.tsx    # Dynamic scoped community hub
-│   │   ├── CommunityHubIndex.tsx    # Hub directory with ranking
-│   │   ├── Servers.tsx         # Public server directory
-│   │   ├── Users.tsx           # Community user directory
-│   │   ├── UserProfile.tsx     # Multi-device admin
-│   │   ├── OrgShowcase.tsx     # Company showcase
-│   │   ├── Sandbox.tsx         # Project sandbox
-│   │   ├── TemplateMarketplace.tsx  # Template grid
-│   │   ├── FeatureShow.tsx     # Project overview & architecture
-│   │   └── SecurityLanding.tsx # Fallback for tampering
-│   ├── hooks/
-│   │   ├── useGunSync.ts       # GunDB P2P sync hook
-│   │   └── ...
-│   ├── contexts/
-│   │   └── AuthContext.tsx     # GitHub OAuth session
-│   ├── App.tsx                 # Root app with routing
-│   └── index.css               # Global styles
-├── functions/                  # Cloudflare Pages Functions
-│   ├── api/
-│   │   ├── community/
-│   │   │   └── hubs.ts         # Hub directory listing + ranking API
-│   │   ├── discussions.ts      # GitHub Discussions proxy
-│   │   ├── posts.ts            # Local post CRUD
-│   │   │   └── comments.ts     # Post comments
-│   │   ├── servers.ts          # Server registry
-│   │   └── users.ts            # User directory
-│   ├── auth/                   # OAuth callback handlers
-│   └── _middleware.ts          # Auth middleware
-├── cloudflare/
-│   ├── cloudflare-worker.js    # Edge worker: /u/, /o/, /s/, /T/, /C/, /F/ routes
-│   └── gun-relay-worker.js     # GunDB WebSocket relay — P2P message forwarding
-├── public/
-│   ├── _redirects              # SPA fallback + redirect rules
-│   └── _headers                # Security headers
-├── conductor/                  # Conductor methodology tracks
-├── dist/                       # Vite build output
-├── index.html
-├── vite.config.ts
-├── tailwind.config.js
-├── tsconfig.json
-├── wrangler.toml
-└── package.json
-```
+> **Living document:** [`PROJECT_STRUCTURE.md`](./PROJECT_STRUCTURE.md) — actively maintained, updated with every structural change.
+
+The project is organized into four main layers:
+
+| Layer | Directory | Purpose |
+|-------|-----------|---------|
+| **Frontend SPA** | `src/` | React 18 + TypeScript app (Vite-built) |
+| **Edge API** | `functions/` | Cloudflare Pages Functions (auth, community, globe WS relay proxy, device telemetry) |
+| **Durable Object Relay** | `do-worker/` | Standalone Worker (`pocwu-globe-relay`) — GlobeRelayDO for real-time WebSocket peer sync |
+| **Static Assets** | `public/` | `_headers`, `_redirects`, favicon |
+| **PRD Documents** | `OpenCodeWEBsPRD/` | 17 files — master PRD, gateway specs, globe spec, polyglot WASM spec (gitignored) |
+| **Methodology** | `conductor/` | Conductor tracks: product, workflow, gun-integration track |
+
+> **Note:** This README shows the high-level structure only. See [`PROJECT_STRUCTURE.md`](./PROJECT_STRUCTURE.md) for the full tree with file-level annotations, API route details, and architectural relationship diagrams.
 
 ---
 
