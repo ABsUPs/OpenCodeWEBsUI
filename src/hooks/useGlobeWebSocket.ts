@@ -48,11 +48,11 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
 
   // Resolve approximate geo-position via IP geolocation API
   useEffect(() => {
-    fetch("https://ipapi.co/json/")
+    fetch("https://ip-api.com/json/")
       .then((r) => r.json())
       .then((data) => {
-        if (typeof data.latitude === "number" && typeof data.longitude === "number") {
-          geoRef.current = { lat: data.latitude, lng: data.longitude };
+        if (data.status === "success" && typeof data.lat === "number" && typeof data.lon === "number") {
+          geoRef.current = { lat: data.lat, lng: data.lon };
         }
       })
       .catch(() => {

@@ -239,11 +239,11 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
 
   // Resolve self geo
   useEffect(() => {
-    fetch("https://ipapi.co/json/")
+    fetch("https://ip-api.com/json/")
       .then((r) => r.json())
       .then((d) => {
-        if (typeof d.latitude === "number" && typeof d.longitude === "number") {
-          selfGeoRef.current = { lat: d.latitude, lng: d.longitude };
+        if (d.status === "success" && typeof d.lat === "number" && typeof d.lon === "number") {
+          selfGeoRef.current = { lat: d.lat, lng: d.lon };
         }
       })
       .catch(() => {});
