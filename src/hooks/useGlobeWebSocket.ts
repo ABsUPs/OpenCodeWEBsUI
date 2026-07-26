@@ -46,18 +46,20 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
   const selfIdRef = useRef<string | null>(null);
   const geoRef = useRef({ lat: 40.7128, lng: -74.006 }); // default: NYC
 
-  // Resolve approximate geo-position via IP geolocation API
+  // Resolve approximate geo-position via browser Geolocation API
+  // Falls back to NYC (default) if unavailable or denied
   useEffect(() => {
-    fetch("https://ip-api.com/json/")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.status === "success" && typeof data.lat === "number" && typeof data.lon === "number") {
-          geoRef.current = { lat: data.lat, lng: data.lon };
-        }
-      })
-      .catch(() => {
-        // keep default fallback
-      });
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        },
+        () => {
+          // permission denied or unavailable — keep default
+        },
+        { timeout: 5000, enableHighAccuracy: false },
+      );
+    }
   }, []);
 
   const connect = useCallback(() => {

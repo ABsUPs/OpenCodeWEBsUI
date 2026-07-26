@@ -237,16 +237,20 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
   peersRef.current = peers;
   const selfGeoRef = useRef({ lat: 40.7128, lng: -74.006 });
 
-  // Resolve self geo
+  // Resolve self geo via browser Geolocation API
+  // Falls back to NYC (default) if unavailable or denied
   useEffect(() => {
-    fetch("https://ip-api.com/json/")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.status === "success" && typeof d.lat === "number" && typeof d.lon === "number") {
-          selfGeoRef.current = { lat: d.lat, lng: d.lon };
-        }
-      })
-      .catch(() => {});
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          selfGeoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        },
+        () => {
+          // permission denied or unavailable — keep default
+        },
+        { timeout: 5000, enableHighAccuracy: false },
+      );
+    }
   }, []);
 
   /* ---------------------------------------------------------------- */
