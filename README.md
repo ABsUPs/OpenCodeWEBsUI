@@ -2,7 +2,11 @@
 
 > Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure manager
 
-**Version:** 1.0.0-EA | **License:** MIT | **Live:** [`pocwu.pages.dev`](https://pocwu.pages.dev) | **PRD:** [`OpenCodeWEBsPRD/PRD.md`](OpenCodeWEBsPRD/PRD.md)
+**Version:** 1.0.0-EA | **License:** [MIT](./LICENSE) | **Live:** [`pocwu.pages.dev`](https://pocwu.pages.dev) | **PRD:** [`OpenCodeWEBsPRD/PRD.md`](OpenCodeWEBsPRD/PRD.md)
+
+---
+
+[📖 **README**](./README.md) ┊ [📁 **Project Structure**](./PROJECT_STRUCTURE.md) ┊ [📋 **ToDo**](./ToDo.md) ┊ [⚙️ **Conductor**](./conductor/index.md) ┊ [📦 **DO Worker**](./do-worker/src/index.ts)
 
 ---
 
