@@ -6,7 +6,7 @@
 
 ---
 
-[📖 **README**](./README.md) ┊ [📁 **Project Structure**](./PROJECT_STRUCTURE.md) ┊ [📋 **ToDo**](./ToDo.md) ┊ [⚙️ **Conductor**](./conductor/index.md) ┊ [📦 **DO Worker**](./do-worker/src/index.ts)
+[📖 README](./README.md) • [🛡️ MIT License](./LICENSE) • [📁 Project Structure](./PROJECT_STRUCTURE.md) • [📋 PRD Index](./OpenCodeWEBsPRD/PRD.md)
 
 ---
 
