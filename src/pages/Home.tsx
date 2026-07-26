@@ -1,34 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import createGlobe from "cobe";
-
-const GLOBE_CONFIG = {
-  devicePixelRatio: 2,
-  width: 800,
-  height: 800,
-  phi: 0,
-  theta: 0.3,
-  dark: 1,
-  diffuse: 1.2,
-  mapSamples: 16000,
-  mapBrightness: 6,
-  baseColor: [0.3, 0.3, 0.9] as [number, number, number],
-  markerColor: [0.1, 0.8, 1.0] as [number, number, number],
-  glowColor: [0.12, 0.12, 0.4] as [number, number, number],
-  markers: [
-    { location: [37.7749, -122.4194] as [number, number], size: 0.06 },
-    { location: [40.7128, -74.006] as [number, number], size: 0.06 },
-    { location: [51.5074, -0.1278] as [number, number], size: 0.05 },
-    { location: [35.6762, 139.6503] as [number, number], size: 0.08 },
-    { location: [48.8566, 2.3522] as [number, number], size: 0.05 },
-    { location: [-33.8688, 151.2093] as [number, number], size: 0.04 },
-    { location: [55.7558, 37.6173] as [number, number], size: 0.05 },
-    { location: [1.3521, 103.8198] as [number, number], size: 0.04 },
-    { location: [19.4326, -99.1332] as [number, number], size: 0.04 },
-    { location: [-22.9068, -43.1729] as [number, number], size: 0.05 },
-    { location: [52.52, 13.405] as [number, number], size: 0.04 },
-    { location: [39.9042, 116.4074] as [number, number], size: 0.06 },
-  ],
-};
+import { useEffect, useState } from "react";
+import MultiplayerGlobe from "../components/MultiplayerGlobe";
 
 const STATS = [
   { label: "Active Nodes", value: "2,847" },
@@ -36,37 +7,6 @@ const STATS = [
   { label: "Templates Shared", value: "891" },
   { label: "Community Members", value: "5,200+" },
 ] as const;
-
-function GlobeCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    let phi = 0;
-
-    const globe = createGlobe(canvas, {
-      ...GLOBE_CONFIG,
-      onRender: (state) => {
-        state.phi = phi;
-        phi += 0.003;
-      },
-    });
-
-    return () => {
-      globe.destroy();
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="h-[400px] w-[400px] md:h-[600px] md:w-[600px]"
-      style={{ contain: "layout paint size" }}
-    />
-  );
-}
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -105,7 +45,7 @@ export default function Home() {
             </p>
           </div>
 
-          <GlobeCanvas />
+          <MultiplayerGlobe />
 
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {STATS.map((stat) => (

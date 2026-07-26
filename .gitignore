@@ -55,3 +55,9 @@ cloudflare-wnp-snapshot.txt
 
 # Editor
 *.local
+
+# ── Local PRD Isolation (managed by prd-orchestrator) ──
+# All PRD documents are strictly local. Never push to GitHub or sync to cloud.
+OpenCodeWEBsPRD/
+**/OpenCodeWEBsPRD/
+**/PRD*.md

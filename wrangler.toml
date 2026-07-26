@@ -4,8 +4,20 @@ compatibility_flags = ["nodejs_compat"]
 
 pages_build_output_dir = "dist"
 
+# Durable Object for Multiplayer Globe WebSocket relay
+[[durable_objects.bindings]]
+name = "GLOBE_RELAY"
+class_name = "GlobeRelayDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["GlobeRelayDO"]
+
 [env.production]
 vars = { ENVIRONMENT = "production" }
+[[env.production.durable_objects.bindings]]
+name = "GLOBE_RELAY"
+class_name = "GlobeRelayDO"
 [[env.production.kv_namespaces]]
 binding = "SESSIONS_KV"
 id = "f664fcc8a19745f196948cd33ea2fe28"

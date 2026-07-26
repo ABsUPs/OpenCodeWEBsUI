@@ -2,13 +2,13 @@
 
 > Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure manager
 
-**Version:** 1.0.0-EA | **License:** MIT | **Live:** [`pocwu.pages.dev`](https://pocwu.pages.dev)
+**Version:** 1.0.0-EA | **License:** MIT | **Live:** [`pocwu.pages.dev`](https://pocwu.pages.dev) | **PRD:** [`OpenCodeWEBsPRD/PRD.md`](OpenCodeWEBsPRD/PRD.md)
 
 ---
 
 ## Overview
 
-OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless cloud runtime via a decentralized, peer-to-peer data synchronization layer powered by **GunDB**. It provides a SaaS-style Web UI featuring multi-agent company orchestration (`/o/`), isolated sandboxes (`/s/`), multi-device remote management (`/u/`), GitHub-based verification, and a 3D interactive global metrics dashboard — all underpinned by a real-time, offline-first GunDB graph network.
+OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless cloud runtime via a decentralized, peer-to-peer data synchronization layer powered by **GunDB**. It provides a SaaS-style Web UI featuring multi-agent company orchestration (`/o/`), isolated sandboxes (`/s/`), multi-device remote management (`/u/`), GitHub-based verification, a **Universal Coding Language Support Engine** for 200+ programming languages, and a 3D interactive global metrics dashboard — all underpinned by a real-time, offline-first GunDB graph network.
 
 ---
 
@@ -24,7 +24,8 @@ OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless clo
 | `/C/` | **Community Hub Directory** | Smart-ranked hub directory with Global/Project toggles, search, sort, and tag filters |
 | `/C/{username}` | **User/Org Hub** | Personal or organization community hub with scoped discussions |
 | `/C/{username}/{project}` | **Project Hub** | Project-scoped community hub |
-| `/C/💬` | **GitHub Discussions ↗** | Internal route alias → `github.com/ABsUPs/OpenCodeWEBsUI/discussions` |
+| `/C/💬` | **Community Discussions** | Internal route — renders GitHub Discussions natively via API; no redirect, no iframes |
+| `/C/ABsUPs/CommunityHub` | **Root Hub (Fixed #1)** | Canonical root community hub, permanently anchored at position #1 |
 | `/S/` | **Servers Directory** | Public server directory with status health checks and registry |
 | `/U/` | **Users Directory** | Community user directory with GitHub-verified profiles |
 | `/F/` | **Feature Showcase** | Project overview, feature cards, architecture diagram, tech stack |
@@ -52,12 +53,23 @@ OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless clo
 ### Community Hub (`/C/`)
 - **Smart-ranked hub directory** with immutable Root Hub (#1) anchored at `/C/ABsUPs/CommunityHub`
 - **Dynamic routing:** `/C/{username}` and `/C/{username}/{project}` for scoped discussions
-- **Header-as-Button:** Click the `💬 Community Hub` header or visit `/C/💬` to open GitHub Discussions
+- **Header-as-Button:** Click the `💬 Community Hub` header to natively render GitHub Discussions — no external redirect
 - **Real-time search** by username, org, or project name
 - **Sort options:** System Smart Rank, Most Active Members, Top Stars & Forks, Recently Created
 - **Tag filters:** Templates, Features, Showcase, Bug Reports
+- **Automated forking** — first-time users auto-fork the root hub to create their personal space
 - **GunDB P2P Sync:** Posts and comments sync instantly across the peer-to-peer mesh
 - **Create/Edit/Delete posts** with inline Markdown, comments, and category tagging
+
+### Universal Coding Language Support Engine
+- **100% language inclusivity** — write, parse, compile, execute, and debug code in **any** programming language
+- **5-tier classification** — Mainstream (TS/JS/Python/Rust), Enterprise Legacy (COBOL/Fortran), Functional (Haskell/Elixir), HDL (Verilog/VHDL), Esoteric (Brainfuck/APL)
+- **Tree-sitter WASM parsing** — dynamic grammar loading for 200+ languages without bundle inflation
+- **Polyglot AST mapping** — unified JSON-serializable AST nodes across all paradigms
+- **Cross-language transpilation** — translate between any languages (e.g., COBOL → Rust)
+- **WASM micro-runtime** for lightweight scripts, **Docker sandbox** for heavy/legacy runtimes
+- **Resource hardening** — 512MB RAM limit, 30-second execution timeout
+- **Full spec:** [`OpenCodeWEBsPRD/universal-engine.md`](OpenCodeWEBsPRD/universal-engine.md)
 
 ### Servers Directory (`/S/`)
 - Public server directory with live health status (`🟢 Healthy`, `🟡 Degraded`, `🔴 Offline`)
@@ -106,6 +118,12 @@ OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless clo
 - Concurrent dual-stream pipeline: verification + optimization
 - Merge to master only when both streams pass validation
 
+### PRD Orchestration System
+- **Local-only PRD isolation** — all documents stored in `OpenCodeWEBsPRD/` with `.gitignore` enforcement
+- **6-step startup pipeline:** path resolution → directory creation → privacy guardrail → auto-sweep → subject routing → isolated write
+- **Subject-based modular files** — master `PRD.md` + indexes for ToDo, Logic, Design, Community, and Security
+- **Cross-platform** — Windows, macOS, Linux, Termux
+
 ---
 
 ## Tech Stack
@@ -121,6 +139,8 @@ OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless clo
 | **Deployment** | Cloudflare Pages + Functions |
 | **Runtime** | Cloudflare Workers (edge) |
 | **Storage** | Cloudflare KV, GitHub Private Fork |
+| **AST Parsing** | Tree-sitter WASM (200+ grammars) |
+| **Sandbox** | WASM micro-runtime + Docker/Podman |
 
 ---
 
@@ -205,45 +225,76 @@ Your site will be live at `https://pocwu.pages.dev`.
 
 ```
 OpenCodeWEBsUI/
+├── OpenCodeWEBsPRD/            # 📁 Strict local PRD storage (gitignored, never synced)
+│   ├── PRD.md                  #     Master PRD — single source of truth
+│   ├── universal-engine.md     #     Universal Coding Engine full spec & pipeline
+│   ├── ToDo.md                 #     Roadmap index → PRD.md §8
+│   ├── Logic.md                #     Backend logic index → PRD.md §§3–6
+│   ├── Design.md               #     UI/UX design index → PRD.md §5
+│   ├── Community_Hub.md        #     Community hub index → PRD.md §4.7
+│   └── Security_Integrity.md   #     Security & privacy index → PRD.md §§4.1, 4.2, 7
 ├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── Layout.tsx       # App shell with nav + footer
-│   │   └── FooterGuard.tsx  # DOM integrity observer
-│   ├── pages/               # Route-level page components
-│   │   ├── Home.tsx         # 3D globe dashboard
-│   │   ├── CommunityHub.tsx # Dynamic scoped community hub
-│   │   ├── CommunityHubIndex.tsx  # Hub directory with ranking
-│   │   ├── Servers.tsx      # Public server directory
-│   │   ├── Users.tsx        # Community user directory
-│   │   ├── UserProfile.tsx  # Multi-device admin
-│   │   ├── OrgShowcase.tsx  # Company showcase
-│   │   ├── Sandbox.tsx      # Project sandbox
-│   │   ├── TemplateMarketplace.tsx
-│   │   ├── SecurityLanding.tsx
+│   ├── main.tsx                # App entry — routing, providers, global layout
+│   ├── prd-orchestrator.ts     # 📋 PRD lifecycle: path resolution, .gitignore, auto-sweep,
+│   │                           #     subject router, isolated write
+│   ├── background-daemon.ts    # Cross-platform OS service installer (systemd/launchd/PM2)
+│   ├── footer-integrity.ts     # Mandatory branding wrapper & MutationObserver
+│   ├── github-auth-fork.ts     # GitHub OAuth, org owner validation, private fork engine
+│   ├── hybrid-deployer.ts      # Serverless deployment with multi-account rotation
+│   ├── db-sync.ts              # Bi-directional local-to-cloud database sync manager
+│   ├── gun-db-sync.ts          # GunDB P2P graph node — SEA encryption, CRDT sync
+│   ├── multi-device-manager.ts # Active node registry & device selector broker
+│   ├── company-sandbox.ts      # Org profile wizard, sandbox isolation, preview engine
+│   ├── task-parallelizer.ts    # Task decomposition & dual-stream concurrent pipeline
+│   ├── universal-engine.ts     # Universal Coding Language Support Engine entry
+│   ├── polyglot/               # Universal Engine submodules
+│   │   ├── language-detector.ts    # Extension parser, shebang detector, categorizer
+│   │   ├── tree-sitter-wasm.ts     # Dynamic WASM AST loader for polyglot languages
+│   │   ├── universal-runner.ts     # Unified execution manager (WASM / Docker)
+│   │   └── transpiler.ts           # Cross-language translation & legacy converter
+│   ├── components/             # Reusable UI components
+│   │   ├── Layout.tsx          # App shell with nav + footer
+│   │   ├── FooterGuard.tsx     # DOM integrity observer
+│   │   ├── GlassCard.tsx       # Reusable glassmorphism card
+│   │   └── Globe.tsx           # Cobe WebGL 3D globe wrapper
+│   ├── pages/                  # Route-level page components
+│   │   ├── Home.tsx            # 3D globe dashboard
+│   │   ├── CommunityHub.tsx    # Dynamic scoped community hub
+│   │   ├── CommunityHubIndex.tsx    # Hub directory with ranking
+│   │   ├── Servers.tsx         # Public server directory
+│   │   ├── Users.tsx           # Community user directory
+│   │   ├── UserProfile.tsx     # Multi-device admin
+│   │   ├── OrgShowcase.tsx     # Company showcase
+│   │   ├── Sandbox.tsx         # Project sandbox
+│   │   ├── TemplateMarketplace.tsx  # Template grid
+│   │   ├── FeatureShow.tsx     # Project overview & architecture
+│   │   └── SecurityLanding.tsx # Fallback for tampering
+│   ├── hooks/
+│   │   ├── useGunSync.ts       # GunDB P2P sync hook
 │   │   └── ...
-│   ├── hooks/               # Custom React hooks
-│   │   ├── useGunSync.ts    # GunDB P2P sync hook
-│   │   └── ...
-│   ├── contexts/            # React contexts
-│   │   └── AuthContext.tsx  # GitHub OAuth session
-│   ├── App.tsx              # Root app with routing
-│   ├── main.tsx             # Entry point
-│   └── index.css            # Global styles
-├── functions/               # Cloudflare Pages Functions
+│   ├── contexts/
+│   │   └── AuthContext.tsx     # GitHub OAuth session
+│   ├── App.tsx                 # Root app with routing
+│   └── index.css               # Global styles
+├── functions/                  # Cloudflare Pages Functions
 │   ├── api/
 │   │   ├── community/
-│   │   │   └── hubs.ts      # Hub directory listing + ranking API
-│   │   ├── discussions.ts   # GitHub Discussions proxy
-│   │   ├── posts.ts         # Local post CRUD
-│   │   │   └── comments.ts  # Post comments
-│   │   ├── servers.ts       # Server registry
-│   │   ├── users.ts         # User directory
-│   │   └── ...
-│   ├── auth/                # OAuth callback handlers
-│   └── _middleware.ts       # Auth middleware
+│   │   │   └── hubs.ts         # Hub directory listing + ranking API
+│   │   ├── discussions.ts      # GitHub Discussions proxy
+│   │   ├── posts.ts            # Local post CRUD
+│   │   │   └── comments.ts     # Post comments
+│   │   ├── servers.ts          # Server registry
+│   │   └── users.ts            # User directory
+│   ├── auth/                   # OAuth callback handlers
+│   └── _middleware.ts          # Auth middleware
+├── cloudflare/
+│   ├── cloudflare-worker.js    # Edge worker: /u/, /o/, /s/, /T/, /C/, /F/ routes
+│   └── gun-relay-worker.js     # GunDB WebSocket relay — P2P message forwarding
 ├── public/
-│   ├── _redirects           # SPA fallback + redirect rules
-│   └── _headers             # Security headers
+│   ├── _redirects              # SPA fallback + redirect rules
+│   └── _headers                # Security headers
+├── conductor/                  # Conductor methodology tracks
+├── dist/                       # Vite build output
 ├── index.html
 ├── vite.config.ts
 ├── tailwind.config.js
@@ -259,6 +310,7 @@ OpenCodeWEBsUI/
 - **Core Maintainer:** [@ABsUP](https://github.com/ABsUP)
 - **Organization:** [@ABsUPs](https://github.com/ABsUPs)
 - **Repository:** [ABsUPs/OpenCodeWEBsUI](https://github.com/ABsUPs/OpenCodeWEBsUI)
+- **PRD Documents:** [`OpenCodeWEBsPRD/`](OpenCodeWEBsPRD/) (strictly local, gitignored)
 
 ---
 
