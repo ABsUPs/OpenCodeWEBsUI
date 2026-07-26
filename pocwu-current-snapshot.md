@@ -1,0 +1,45 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - navigation [ref=f4e5]:
+      - link "OpenCode ABsUI" [ref=f4e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f4e7]: OpenCode
+        - generic [ref=f4e8]: ABsUI
+      - generic [ref=f4e9]:
+        - link "Home" [ref=f4e10] [cursor=pointer]:
+          - /url: /
+        - link "Templates" [ref=f4e11] [cursor=pointer]:
+          - /url: /T
+        - link "Community" [ref=f4e12] [cursor=pointer]:
+          - /url: /C
+        - link "Servers" [ref=f4e13] [cursor=pointer]:
+          - /url: /S
+        - link "Users" [ref=f4e14] [cursor=pointer]:
+          - /url: /U
+        - link "Features" [ref=f4e15] [cursor=pointer]:
+          - /url: /F
+      - button "Login with GitHub" [ref=f4e17] [cursor=pointer]
+  - main [ref=f4e21]:
+    - generic [ref=f4e24]:
+      - generic [ref=f4e25]:
+        - generic [ref=f4e26]: v1.0.0-EA
+        - heading "OpenCodeABsUI/UX" [level=1] [ref=f4e28]
+        - paragraph [ref=f4e29]: Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure manager. Bridging local dev environments with 24/7 serverless cloud runtime.
+      - generic [ref=f4e31]:
+        - generic [ref=f4e32]:
+          - generic [ref=f4e33]: 2,847
+          - generic [ref=f4e34]: Active Nodes
+        - generic [ref=f4e35]:
+          - generic [ref=f4e36]: 12,543
+          - generic [ref=f4e37]: Sandbox Deployments
+        - generic [ref=f4e38]:
+          - generic [ref=f4e39]: "891"
+          - generic [ref=f4e40]: Templates Shared
+        - generic [ref=f4e41]:
+          - generic [ref=f4e42]: 5,200+
+          - generic [ref=f4e43]: Community Members
+  - contentinfo [ref=f4e44]:
+    - link "OpenCodeABsUI/UX - Powered by ABsUP.ORG" [ref=f4e46] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f4e47]: 🗄️⚡💝
+      - generic [ref=f4e48]: ~ ABsUP.ORG
