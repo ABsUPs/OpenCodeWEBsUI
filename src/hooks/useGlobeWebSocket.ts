@@ -1,10 +1,19 @@
 /**
  * useGlobeWebSocket — Real-time peer position sync for the multiplayer globe.
  *
- * Connects to the Cloudflare DO WebSocket relay at `/api/globe-ws`,
- * resolves the user's approximate geo-location via IP on mount,
- * and broadcasts position updates whenever the user interacts with the globe.
+ * Protocol (matching GlobeRelayDO):
+ *   Server → Client: { type: "add-marker",    position: { lat, lng, id, self? } }
+ *   Server → Client: { type: "remove-marker", id }
+ *   Server → Client: { type: "move-marker",   id, lat, lng }
+ *   Client → Server: { type: "MOVE",          lat, lng }
+ *
+ * Geo-position is resolved server-side via Cloudflare cf-* headers
+ * (no browser Geolocation API needed).
+ *
+ * Reference:
+ *   https://github.com/cloudflare/templates/tree/main/multiplayer-globe-template
  */
+
 import { useEffect, useRef, useState, useCallback } from "react";
 
 /* ------------------------------------------------------------------ */
@@ -15,6 +24,8 @@ export interface PeerPosition {
   id: string;
   lat: number;
   lng: number;
+  /** true for the local user's own marker */
+  self?: boolean;
 }
 
 export type ConnectionStatus =
@@ -24,10 +35,13 @@ export type ConnectionStatus =
   | "error";
 
 interface UseGlobeWebSocketReturn {
-  /** Active remote peers (does NOT include self) */
+  /** ALL known positions including self (self has self=true) */
+  allPositions: PeerPosition[];
+  /** Remote peers only (excludes self) */
   peers: PeerPosition[];
+  /** Our own position (or null if not yet received) */
+  selfPosition: PeerPosition | null;
   connectionStatus: ConnectionStatus;
-  /** Number of active peers (excluding self) */
   peerCount: number;
 }
 
@@ -36,31 +50,14 @@ interface UseGlobeWebSocketReturn {
 /* ------------------------------------------------------------------ */
 
 export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
-  const [peers, setPeers] = useState<PeerPosition[]>([]);
+  const [allPositions, setAllPositions] = useState<PeerPosition[]>([]);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("disconnected");
+  const [selfPosition, setSelfPosition] = useState<PeerPosition | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout>>();
   const mountedRef = useRef(true);
-  const selfIdRef = useRef<string | null>(null);
-  const geoRef = useRef({ lat: 40.7128, lng: -74.006 }); // default: NYC
-
-  // Resolve approximate geo-position via browser Geolocation API
-  // Falls back to NYC (default) if unavailable or denied
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        },
-        () => {
-          // permission denied or unavailable — keep default
-        },
-        { timeout: 5000, enableHighAccuracy: false },
-      );
-    }
-  }, []);
 
   const connect = useCallback(() => {
     if (!mountedRef.current) return;
@@ -74,39 +71,54 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      if (!mountedRef.current) {
-        ws.close();
-        return;
-      }
+      if (!mountedRef.current) { ws.close(); return; }
       setConnectionStatus("connected");
-      ws.send(
-        JSON.stringify({
-          type: "JOIN",
-          lat: geoRef.current.lat,
-          lng: geoRef.current.lng,
-        }),
-      );
     };
 
     ws.onmessage = (event: MessageEvent) => {
       if (!mountedRef.current) return;
+
       try {
         const data = JSON.parse(event.data as string);
 
-        if (data.type === "PEERS_UPDATE") {
-          const incoming: PeerPosition[] = data.peers ?? [];
-          // Filter out self by storing our session ID on first PEERS_UPDATE
-          if (incoming.length > 0 && !selfIdRef.current) {
-            // Heuristic: the peer with our exact geo is us
-            const maybeSelf = incoming.find(
-              (p) =>
-                Math.abs(p.lat - geoRef.current.lat) < 0.1 &&
-                Math.abs(p.lng - geoRef.current.lng) < 0.1,
-            );
-            if (maybeSelf) selfIdRef.current = maybeSelf.id;
+        setAllPositions((prev) => {
+          let updated: PeerPosition[];
+
+          switch (data.type) {
+            case "add-marker": {
+              const pos = data.position as PeerPosition;
+              // Replace if exists, otherwise add
+              const existing = prev.findIndex((p) => p.id === pos.id);
+              if (existing >= 0) {
+                updated = [...prev];
+                updated[existing] = pos;
+              } else {
+                updated = [...prev, pos];
+              }
+              break;
+            }
+            case "remove-marker": {
+              updated = prev.filter((p) => p.id !== data.id);
+              break;
+            }
+            case "move-marker": {
+              updated = prev.map((p) =>
+                p.id === data.id ? { ...p, lat: data.lat, lng: data.lng } : p,
+              );
+              break;
+            }
+            default:
+              return prev;
           }
-          setPeers(incoming.filter((p) => p.id !== selfIdRef.current));
-        }
+
+          // Update selfPosition whenever we detect our own marker
+          const self = updated.find((p) => p.self);
+          if (self && (!selfPosition || self.id !== selfPosition.id)) {
+            setSelfPosition(self);
+          }
+
+          return updated;
+        });
       } catch {
         // ignore malformed frames
       }
@@ -140,8 +152,12 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     };
   }, [connect]);
 
+  const peers = allPositions.filter((p) => !p.self);
+
   return {
+    allPositions,
     peers,
+    selfPosition,
     connectionStatus,
     peerCount: peers.length,
   };

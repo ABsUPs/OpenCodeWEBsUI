@@ -1,37 +1,45 @@
 /**
- * Pages Function — WebSocket handler for Multiplayer Globe.
+ * Pages Function — WebSocket handler for MultiplayerGlobe.
  *
- * Phase 1: Per-connection handler (no Durable Object yet).
- *   Each connection is isolated; the client shows "Live" with 0 peers.
+ * Phase 2: Forwards WebSocket upgrade to GlobeRelayDO (standalone Worker)
+ * for real-time cross-user peer sync. Geo-position is extracted from the
+ * Cloudflare cf-* headers and passed as X-Geo-* headers to the DO.
  *
- * Phase 2 (follow-up): Replace with Durable Object relay for cross-user sync.
- *   DO will maintain shared peer state across all connections.
+ * Architecture:
+ *   Browser → wss://pocwu.pages.dev/api/globe-ws
+ *          → Pages Function (this file)
+ *          → service binding → pocwu-globe-relay Worker → GlobeRelayDO
+ *
+ * Reference:
+ *   https://github.com/cloudflare/templates/tree/main/multiplayer-globe-template
  */
 
-export const onRequest: PagesFunction = async (context) => {
-  const upgrade = context.request.headers.get("Upgrade");
+interface Env {
+  GLOBE_DO: Fetcher; // service binding to pocwu-globe-relay
+}
+
+export const onRequest: PagesFunction<Env> = async (context) => {
+  const { request, env } = context;
+
+  const upgrade = request.headers.get("Upgrade");
   if (!upgrade || upgrade.toLowerCase() !== "websocket") {
     return new Response("Expected WebSocket upgrade", { status: 426 });
   }
 
-  const pair = new WebSocketPair();
-  const client = pair[0];
-  const server = pair[1];
+  // Extract geo-position from Cloudflare cf-* headers (set on the edge)
+  const cf = (request as any).cf as Record<string, unknown> | undefined;
+  const latitude = String(cf?.latitude ?? "");
+  const longitude = String(cf?.longitude ?? "");
 
-  server.accept();
-
-  // Isolated per-connection handler — replies with empty peer list.
-  // In Phase 2, this will be replaced with a Durable Object stub fetch.
-  server.addEventListener("message", (event: MessageEvent) => {
-    try {
-      const data = JSON.parse(event.data as string);
-      if (data.type === "JOIN" || data.type === "MOVE") {
-        server.send(JSON.stringify({ type: "PEERS_UPDATE", peers: [] }));
-      }
-    } catch {
-      // ignore malformed messages
-    }
+  // Forward to DO via service binding, passing geo as headers
+  const doRequest = new Request(request.url, {
+    method: "GET",
+    headers: {
+      Upgrade: "websocket",
+      "X-Geo-Latitude": latitude,
+      "X-Geo-Longitude": longitude,
+    },
   });
 
-  return new Response(null, { status: 101, webSocket: client });
+  return env.GLOBE_DO.fetch(doRequest);
 };

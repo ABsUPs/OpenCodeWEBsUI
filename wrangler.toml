@@ -6,6 +6,9 @@ pages_build_output_dir = "dist"
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
+[[env.production.services]]
+binding = "GLOBE_DO"
+service = "pocwu-globe-relay"
 [[env.production.kv_namespaces]]
 binding = "SESSIONS_KV"
 id = "f664fcc8a19745f196948cd33ea2fe28"
@@ -31,3 +34,8 @@ id = "9631d086c834474f8cd3ee9e65555add"
 binding = "DB"
 database_name = "opencodeabs"
 database_id = "ac9be9b0-bfd3-498d-b8d8-a38f4d6ecb32"
+
+# Service binding to the GlobeRelayDO Worker (deployed separately from do-worker/)
+[[services]]
+binding = "GLOBE_DO"
+service = "pocwu-globe-relay"

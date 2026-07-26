@@ -1,11 +1,14 @@
 /**
  * MultiplayerGlobe — Real-time 3D world globe with COBE WebGL rendering
- * and live peer-position markers synchronised via WebSocket relay.
+ * and live peer-position markers synchronised via GlobeRelayDO.
+ *
+ * Responsive: fills its container width, uses ResizeObserver + DPR.
+ * Live: shows "X connected" counter and self/peer markers on the globe.
  *
  * Architecture:
- *   Canvas A (WebGL)  ← COBE renders globe + markers
- *   Canvas B (2D)     ← Overlay draws arcs between connected peers
- *   useGlobeWebSocket ← Fetches active peer positions from DO relay
+ *   COBE canvas    ← WebGL globe with markers
+ *   Arc overlay    ← Bezier curves from self → peers
+ *   useGlobeWebSocket ← Cloudflare DO relay for real-time peer positions
  *
  * References:
  *   https://github.com/shuding/cobe
@@ -13,10 +16,13 @@
  */
 import { useEffect, useRef, useState } from "react";
 import createGlobe from "cobe";
-import { useGlobeWebSocket, type ConnectionStatus } from "../hooks/useGlobeWebSocket";
+import {
+  useGlobeWebSocket,
+  type ConnectionStatus,
+} from "../hooks/useGlobeWebSocket";
 
 /* ------------------------------------------------------------------ */
-/*  Projection — lat/lng → screen coordinates                         */
+/*  Projection — lat/lng → screen coordinates                          */
 /* ------------------------------------------------------------------ */
 
 interface ScreenPoint {
@@ -26,9 +32,7 @@ interface ScreenPoint {
 }
 
 /**
- * Convert geographic coordinates to 2D screen position using an
- * orthographic globe projection matching COBE's rendering.
- *
+ * Orthographic projection matching COBE's internal rendering.
  * Returns null when the point is on the back face of the globe.
  */
 function latLngToScreen(
@@ -43,24 +47,21 @@ function latLngToScreen(
   const latR = lat * (Math.PI / 180);
   const lngR = lng * (Math.PI / 180);
 
-  // Unit sphere cartesian
   const x = Math.cos(latR) * Math.cos(lngR);
   const y = Math.sin(latR);
   const z = Math.cos(latR) * Math.sin(lngR);
 
-  // Rotate around Y (phi — longitude rotation)
   const cφ = Math.cos(phi);
   const sφ = Math.sin(phi);
   const x1 = x * cφ + z * sφ;
   const z1 = -x * sφ + z * cφ;
 
-  // Rotate around X (theta — latitude tilt)
   const cθ = Math.cos(theta);
   const sθ = Math.sin(theta);
   const y2 = y * cθ - z1 * sθ;
   const z2 = y * sθ + z1 * cθ;
 
-  if (z2 <= 0) return null; // back-face culling
+  if (z2 <= 0) return null;
 
   return { x: cx + x1 * radius, y: cy + y2 * radius, z: z2 };
 }
@@ -81,7 +82,6 @@ function drawArcs(
   if (!ctx) return;
 
   ctx.clearRect(0, 0, arcCanvas.width, arcCanvas.height);
-
   if (peers.length === 0) return;
 
   const cx = arcCanvas.width / 2;
@@ -112,68 +112,6 @@ function drawArcs(
     ctx.lineWidth = 1.2;
     ctx.stroke();
   }
-}
-
-/* ------------------------------------------------------------------ */
-/*  Static fallback — rendered when WebGL is unavailable               */
-/* ------------------------------------------------------------------ */
-
-function StaticGlobeFallback() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let frame = 0;
-    const id = setInterval(() => {
-      frame++;
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const r = Math.min(w, h) * 0.35;
-
-      // Globe circle
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(100, 200, 255, 0.3)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Latitude lines
-      for (let i = -2; i <= 2; i++) {
-        const yOff = (i / 5) * r;
-        const latR = Math.sqrt(r * r - yOff * yOff);
-        ctx.beginPath();
-        ctx.ellipse(cx, cy + yOff, latR, Math.abs(yOff) * 0.6, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(100, 200, 255, 0.12)";
-        ctx.stroke();
-      }
-
-      // Pulsing dot
-      const pulse = 0.5 + 0.5 * Math.sin(frame * 0.05);
-      ctx.beginPath();
-      ctx.arc(cx, cy, 4 + 2 * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(100, 200, 255, ${(0.3 + 0.3 * pulse).toFixed(3)})`;
-      ctx.fill();
-    }, 50);
-
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="h-[400px] w-[400px] md:h-[600px] md:w-[600px]"
-      style={{ contain: "layout paint size" }}
-    />
-  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -213,10 +151,12 @@ function ConnectionBadge({ status }: { status: ConnectionStatus }) {
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
-const COBE_SIZE = 800; // fixed internal resolution — CSS scales to container
 const DRAG_SENSITIVITY = 0.005;
 const FRICTION = 0.95;
 const VELOCITY_THRESHOLD = 0.0001;
+
+// Internal COBE resolution scalar — CSS container size × DPR × this
+const RES_SCALE = 2;
 
 interface MultiplayerGlobeProps {
   className?: string;
@@ -226,31 +166,37 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const arcCanvasRef = useRef<HTMLCanvasElement>(null);
-  const { peers, connectionStatus } = useGlobeWebSocket();
+  const { peers, selfPosition, connectionStatus, peerCount } =
+    useGlobeWebSocket();
 
+  const [containerSize, setContainerSize] = useState({ w: 400, h: 400 });
   const [webglFailed, setWebglFailed] = useState(false);
-  const [arcDim, setArcDim] = useState({ w: 600, h: 600 });
 
-  // Keep a ref to the latest peer array so the render-loop closure
-  // always has fresh data without re-creating the COBE instance.
+  // Keep refs to latest data for the render-loop closure
   const peersRef = useRef(peers);
   peersRef.current = peers;
-  const selfGeoRef = useRef({ lat: 40.7128, lng: -74.006 });
+  const selfRef = useRef(selfPosition);
+  selfRef.current = selfPosition;
 
-  // Resolve self geo via browser Geolocation API
-  // Falls back to NYC (default) if unavailable or denied
+  /* ---------------------------------------------------------------- */
+  /*  Container ResizeObserver — responsive sizing                     */
+  /* ---------------------------------------------------------------- */
+
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          selfGeoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        },
-        () => {
-          // permission denied or unavailable — keep default
-        },
-        { timeout: 5000, enableHighAccuracy: false },
-      );
-    }
+    const container = containerRef.current;
+    if (!container) return;
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        // Square globe: size = min(width, 700) keeping it responsive
+        const size = Math.min(Math.max(width, 280), 700);
+        setContainerSize({ w: size, h: size });
+      }
+    });
+
+    ro.observe(container);
+    return () => ro.disconnect();
   }, []);
 
   /* ---------------------------------------------------------------- */
@@ -261,9 +207,12 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
     const canvas = canvasRef.current;
     if (!canvas || webglFailed) return;
 
-    // Set internal resolution
-    canvas.width = COBE_SIZE;
-    canvas.height = COBE_SIZE;
+    const size = containerSize.w;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const internalSize = Math.round(size * dpr * RES_SCALE);
+
+    canvas.width = internalSize;
+    canvas.height = internalSize;
 
     let phi = 0;
     let theta = 0.3;
@@ -273,8 +222,8 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: 1, // we control resolution via canvas size
-      width: COBE_SIZE,
-      height: COBE_SIZE,
+      width: internalSize,
+      height: internalSize,
       phi: 0,
       theta,
       dark: 1,
@@ -287,26 +236,48 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       markers: [],
       scale: 1,
       onRender: (state) => {
+        // Auto-rotate with inertia
         if (!isDragging) {
           phi += velocity;
           velocity *= FRICTION;
           if (Math.abs(velocity) < VELOCITY_THRESHOLD) velocity = 0;
+        } else {
+          // Gentle auto-rotation even while dragging stops if user holds
         }
 
         state.phi = phi;
-        state.markers = peersRef.current.map((p) => ({
-          location: [p.lat, p.lng] as [number, number],
-          size: 0.05,
-        }));
+
+        // Build markers: self marker is large, peer markers are small
+        const markers: Array<{ location: [number, number]; size: number; color?: [number, number, number] }> = [];
+
+        // Self marker (bright cyan, larger)
+        const self = selfRef.current;
+        if (self) {
+          markers.push({
+            location: [self.lat, self.lng],
+            size: 0.08,
+            color: [0.3, 1.0, 1.0],
+          });
+        }
+
+        // Peer markers (standard markerColor)
+        for (const peer of peersRef.current) {
+          markers.push({
+            location: [peer.lat, peer.lng],
+            size: 0.04,
+          });
+        }
+
+        state.markers = markers;
 
         // Draw arcs on overlay canvas
         const ac = arcCanvasRef.current;
-        if (ac) {
+        if (ac && self) {
           drawArcs(
             ac,
             peersRef.current,
-            selfGeoRef.current.lat,
-            selfGeoRef.current.lng,
+            self.lat,
+            self.lng,
             phi,
             theta,
           );
@@ -358,77 +329,58 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       canvas.removeEventListener("pointerleave", onUp);
       canvas.removeEventListener("webglcontextlost", onCtxLost);
     };
-  }, [webglFailed]);
+  }, [containerSize, webglFailed]);
 
   /* ---------------------------------------------------------------- */
-  /*  Arc canvas — ResizeObserver for crisp overlay                   */
+  /*  Arc canvas — sync pixel size to container                        */
   /* ---------------------------------------------------------------- */
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        const dpr = Math.min(window.devicePixelRatio, 2);
-        setArcDim({ w: Math.round(width * dpr), h: Math.round(height * dpr) });
-      }
-    });
-
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, []);
-
-  // Sync arc canvas internal pixels
   useEffect(() => {
     const ac = arcCanvasRef.current;
-    if (ac) {
-      ac.width = arcDim.w;
-      ac.height = arcDim.h;
-    }
-  }, [arcDim]);
+    if (!ac) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    ac.width = containerSize.w * dpr;
+    ac.height = containerSize.h * dpr;
+    ac.style.width = `${containerSize.w}px`;
+    ac.style.height = `${containerSize.h}px`;
+  }, [containerSize]);
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
   /* ---------------------------------------------------------------- */
 
-  if (webglFailed) {
-    return (
-      <div className={`relative inline-flex flex-col items-center gap-3 ${className}`}>
-        <StaticGlobeFallback />
-        <span className="text-[11px] text-white/20">WebGL unavailable — showing fallback</span>
-      </div>
-    );
-  }
-
   return (
     <div
       ref={containerRef}
-      className={`relative inline-flex flex-col items-center gap-3 ${className}`}
+      className={`relative mx-auto flex w-full max-w-[700px] flex-col items-center gap-3 ${className}`}
     >
-      {/* COBE WebGL canvas */}
-      <canvas
-        ref={canvasRef}
-        className="h-[400px] w-[400px] md:h-[600px] md:w-[600px]"
-        style={{ contain: "layout paint size" }}
-      />
+      {/* COBE WebGL canvas — CSS fills container width */}
+      <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
+        <canvas
+          ref={canvasRef}
+          className="h-full w-full"
+          style={{ contain: "layout paint size", display: webglFailed ? "none" : "block" }}
+        />
 
-      {/* Arc overlay — same size, positioned on top */}
-      <canvas
-        ref={arcCanvasRef}
-        className="pointer-events-none absolute inset-0 h-[400px] w-[400px] md:h-[600px] md:w-[600px]"
-        style={{ contain: "layout paint size" }}
-      />
+        {/* Arc overlay — same size, positioned on top */}
+        <canvas
+          ref={arcCanvasRef}
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          style={{ contain: "layout paint size" }}
+        />
 
-      {/* Status badge */}
-      <div className="absolute bottom-2 left-2">
-        <ConnectionBadge status={connectionStatus} />
+        {/* Status badge */}
+        <div className="absolute bottom-2 left-2 z-10">
+          <ConnectionBadge status={connectionStatus} />
+        </div>
       </div>
 
-      {connectionStatus === "connected" && peers.length > 0 && (
-        <span className="text-[11px] text-white/25">
-          {peers.length} active peer{peers.length === 1 ? "" : "s"}
+      {/* Live counter */}
+      {connectionStatus === "connected" && (
+        <span className="text-xs text-white/40 transition-opacity">
+          {peerCount > 0
+            ? `${peerCount} ${peerCount === 1 ? "person" : "people"} connected`
+            : "No one else is here yet"}
         </span>
       )}
     </div>
