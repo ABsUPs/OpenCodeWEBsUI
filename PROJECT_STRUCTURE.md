@@ -1,7 +1,9 @@
 # Project Structure — OpenCodeABsUI/UX
 
 > **Living document** — updated as the codebase evolves.
-> Last updated: 2026-07-26
+> Last updated: 2026-07-27
+>
+> **Polyglot: 22 language types** — TypeScript · JavaScript · CSS · JSON · HTML · Rust · Python · Go · C · GLSL · Lua · Ruby · Zig · Kotlin · Nim · Shell · SQL · TOML · PowerShell · YAML · Dockerfile · Makefile
 
 ```
 OpenCodeWEBsUI/
@@ -18,6 +20,7 @@ OpenCodeWEBsUI/
 ├── README.md                     # Repo overview, routes, features, getting started
 ├── PROJECT_STRUCTURE.md          # This file — actively maintained directory map
 ├── ToDo.md                       # Task log: phase tracking, PRD feature roadmap
+├── Makefile                      # Polyglot build automation (build, deploy, wasm, python, polyglot)
 ├── schema.sql                    # D1 database schema
 │
 ├── OpenCodeWEBsPRD/              # 📁 Strictly local PRD storage (gitignored, never synced)
@@ -38,6 +41,41 @@ OpenCodeWEBsUI/
 │   ├── Multiplayer_Globe_Logic.md
 │   ├── Polyglot_Microservices_PRD.md   # Rust/WASM/Go/C++ architecture → PRD.md §4.17
 │   └── Polyglot_Microservices_Logic.md # IPC flow, WASM bridge, polyglot routing
+│
+│
+├── cmd/                          # 📁 Go CLI toolchain
+│   └── pocwu/
+│       ├── main.go               # CLI: build, deploy, status, wasm, json commands
+│       └── go.mod                # Go module definition
+│
+├── native/                       # 📁 Native C & Zig modules
+│   ├── globe_math.h              # C99 header: Haversine, great-circle, rotation
+│   ├── globe_math.c              # C99 implementation + native test harness
+│   ├── globe.zig                 # Zig implementation of globe math
+│   ├── exports.json              # Emscripten function export list
+│   └── Makefile                  # Native build: test (gcc), wasm (emcc)
+│
+├── rswasm-globe-physics/         # 📁 Rust WASM globe physics engine
+│   ├── Cargo.toml                # Cargo project (wasm-bindgen, serde)
+│   └── src/
+│       └── lib.rs                # Rust lib: Haversine, spherical interp, rotation, FFI exports
+│
+├── scripts/                      # 📁 Cross-language scripts & tooling
+│   ├── generate_cities.py        # Python: city data generator & validator
+│   ├── requirements.txt          # Python dependencies
+│   ├── deploy.sh                 # Bash: build + deploy pipeline
+│   ├── setup.sh                  # Bash: dev environment setup
+│   ├── pocwu.lua                 # Lua: build configuration & file counting
+│   ├── preview.rb                # Ruby: local preview server (WEBrick)
+│   └── deploy.ps1                # PowerShell: build + deploy (Windows)
+│
+├── shaders/                      # 📁 GLSL WebGL shaders
+│   ├── globe.vert                # Vertex shader: puff effect, model-view-projection
+│   └── globe.frag                # Fragment shader: Fresnel glow, Lambert diffuse, specular
+│
+├── tools/                        # 📁 JVM & systems scripting tools
+│   ├── pocwu.main.kts            # Kotlin script: project validation & file count
+│   └── pocwu.nim                 # Nim utility: health checks & stats
 │
 ├── src/                          # 📁 Frontend application source
 │   ├── main.tsx                  # App entry — React root, providers

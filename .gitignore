@@ -33,8 +33,23 @@ Thumbs.db
 # Wrangler local state
 .wrangler/
 
+# Rust build artifacts
+rswasm-globe-physics/target/
+
+# C build artifacts
+native/globe_test
+native/globe_math.wasm
+
+# Go build artifacts
+cmd/pocwu/pocwu
+cmd/pocwu/pocwu.exe
+
+# GitHub Actions (no workflow token scope)
+.github/
+
 # Screenshots (root-level only)
 /pocwu-*.png
+/production-globe.png
 /community-hub-live.png
 /login-button-visible.png
 /page-*.png
