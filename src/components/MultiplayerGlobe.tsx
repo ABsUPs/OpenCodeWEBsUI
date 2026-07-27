@@ -183,8 +183,9 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       arcWidth: 0.5,
       arcHeight: 0.3,
       markerElevation: 0.02,
-      markers: [],
-      arcs: [],
+      // Seed with one dummy marker so the WebGL buffer is bound from frame 0.
+      markers: [{ location: [0, 0], size: 0.001 }],
+      arcs: [{ from: [0, 0], to: [0, 0] }],
     });
 
     /* -------- Animation loop -------- */
