@@ -1,7 +1,13 @@
 /**
  * Users API
  *
- * GET /api/users — list all registered users from active sessions
+ * GET /api/users — list all registered users from active sessions.
+ * Online status is determined by presence KV keys (ws_active:<login>)
+ * that are set / refreshed by globe-ws.ts (WebSocket upgrade) and
+ * globe-ping.ts (heartbeat), NOT by session freshness.
+ *
+ * This approach works independently of the DO Worker lifecycle —
+ * no DO query needed.
  */
 
 interface Env {
@@ -40,10 +46,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return json({ error: "Storage not configured" }, 503);
   }
 
-  // Iterate over all session keys
+  // ── Iterate over all session keys ──────────────────────────────────//
   const userMap = new Map<string, UserEntry>();
-  const now = Date.now();
-  const FIFTEEN_MIN = 15 * 60 * 1000;
 
   try {
     let cursor: string | undefined;
@@ -54,7 +58,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         if (!val) continue;
 
         try {
-          const session = JSON.parse(val) as { user: SessionUser; createdAt: string };
+          const session = JSON.parse(val) as {
+            user: SessionUser;
+            createdAt: string;
+          };
           if (!session.user?.login) continue;
 
           const login = session.user.login;
@@ -63,15 +70,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
           // Keep the most recent session timestamp
           const sessionTime = new Date(session.createdAt).getTime();
           if (!existing || sessionTime > new Date(existing.joinedAt).getTime()) {
-            // Check if session is recent (within 15 min) = online
-            const isOnline = (now - sessionTime) < FIFTEEN_MIN;
+            // Online if they have an active ws_active KV key (set by
+            // globe-ws.ts on WS upgrade, refreshed by globe-ping.ts heartbeat)
+            const wsKey = `ws_active:${login}`;
+            const wsActive = await kv.get(wsKey);
 
             userMap.set(login, {
               login: session.user.login,
               id: session.user.id,
               avatar: session.user.avatar,
               name: session.user.name,
-              status: isOnline ? "online" : "offline",
+              status: wsActive ? "online" : "offline",
               lastSeen: existing?.lastSeen ?? session.createdAt,
               joinedAt: existing?.joinedAt ?? session.createdAt,
             });

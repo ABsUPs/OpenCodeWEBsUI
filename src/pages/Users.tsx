@@ -1,5 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { timeAgo } from "../utils/users-time-ago.js";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -15,23 +17,7 @@ interface UserEntry {
   joinedAt: string;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo ago`;
-  return `${Math.floor(months / 12)}y ago`;
-}
+const POLL_INTERVAL = 10_000; // refresh online status every 10 s
 
 /* ------------------------------------------------------------------ */
 /*  Skeleton                                                           */
@@ -57,14 +43,30 @@ function SkeletonList() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Online dot                                                        */
+/* ------------------------------------------------------------------ */
+
+function OnlineDot({ online }: { online: boolean }) {
+  return (
+    <span
+      className={`inline-block h-1.5 w-1.5 rounded-full transition-colors duration-500 ${
+        online ? "bg-emerald-500" : "bg-white/20"
+      }`}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  User Card                                                          */
 /* ------------------------------------------------------------------ */
 
-function UserCard({ user }: { user: UserEntry }) {
+function UserCard({ user, isYou }: { user: UserEntry; isYou: boolean }) {
   return (
     <Link
       to={`/u/${user.login}`}
-      className="card-surface group flex items-center gap-4 transition-all hover:border-brand-500/30"
+      className={`card-surface group flex items-center gap-4 transition-all hover:border-brand-500/30 ${
+        isYou ? "ring-1 ring-brand-500/20" : ""
+      }`}
     >
       {/* Avatar */}
       <div className="relative shrink-0">
@@ -75,7 +77,7 @@ function UserCard({ user }: { user: UserEntry }) {
           loading="lazy"
         />
         <span
-          className={`absolute -bottom-0.5 -right-0.5 block h-3.5 w-3.5 rounded-full border-2 border-surface-base ${
+          className={`absolute -bottom-0.5 -right-0.5 block h-3.5 w-3.5 rounded-full border-2 border-surface-base transition-colors duration-500 ${
             user.status === "online" ? "bg-emerald-500" : "bg-white/20"
           }`}
         />
@@ -88,14 +90,15 @@ function UserCard({ user }: { user: UserEntry }) {
             {user.name}
           </span>
           <span className="text-xs text-white/30">@{user.login}</span>
+          {isYou && (
+            <span className="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-400">
+              You
+            </span>
+          )}
         </div>
         <div className="mt-0.5 flex items-center gap-3 text-xs text-white/30">
           <span className="flex items-center gap-1">
-            <span
-              className={`inline-block h-1.5 w-1.5 rounded-full ${
-                user.status === "online" ? "bg-emerald-500" : "bg-white/20"
-              }`}
-            />
+            <OnlineDot online={user.status === "online"} />
             {user.status === "online" ? "Online" : "Offline"}
           </span>
           {user.lastSeen && user.status === "offline" && (
@@ -123,7 +126,18 @@ function UserCard({ user }: { user: UserEntry }) {
 /*  Empty State                                                        */
 /* ------------------------------------------------------------------ */
 
-function EmptyState() {
+function EmptyState({ hasQuery, query }: { hasQuery: boolean; query?: string }) {
+  if (hasQuery) {
+    return (
+      <div className="card-surface text-center">
+        <p className="text-sm text-white/40">
+          No users matching{" "}
+          <span className="text-white/60">&ldquo;{query}&rdquo;</span>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="card-surface text-center">
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
@@ -182,9 +196,12 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const { user: currentUser } = useAuth();
+  const pollRef = useRef<ReturnType<typeof setInterval>>();
 
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
+  /** Fetch user list — optionally silent (no loading skeleton on re-fetch) */
+  const fetchUsers = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const r = await fetch("/api/users");
@@ -192,16 +209,30 @@ export default function Users() {
       const data = (await r.json()) as { users: UserEntry[] };
       setUsers(data.users);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load users");
+      if (!silent) {
+        setError(err instanceof Error ? err.message : "Failed to load users");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
+  // ── Initial fetch ──────────────────────────────────────────────
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
+  // ── Live polling (silent background refresh every 10 s) ────────
+  useEffect(() => {
+    pollRef.current = setInterval(() => {
+      fetchUsers(true);
+    }, POLL_INTERVAL);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [fetchUsers]);
+
+  const currentLogin = currentUser?.login ?? "";
   const query = search.toLowerCase().trim();
   const filtered = query
     ? users.filter(
@@ -242,7 +273,7 @@ export default function Users() {
         <div className="card-surface border-red-500/20 text-center">
           <p className="text-sm text-red-400">{error}</p>
           <button
-            onClick={fetchUsers}
+            onClick={() => fetchUsers()}
             className="mt-3 rounded-lg bg-brand-600/20 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-600/30"
           >
             Try again
@@ -250,20 +281,16 @@ export default function Users() {
         </div>
       )}
       {!loading && !error && filtered.length === 0 && (
-        query ? (
-          <div className="card-surface text-center">
-            <p className="text-sm text-white/40">
-              No users matching <span className="text-white/60">"{search}"</span>
-            </p>
-          </div>
-        ) : (
-          <EmptyState />
-        )
+        <EmptyState hasQuery={query.length > 0} query={search} />
       )}
       {!loading && !error && filtered.length > 0 && (
         <div className="space-y-2">
           {filtered.map((user) => (
-            <UserCard key={user.login} user={user} />
+            <UserCard
+              key={user.login}
+              user={user}
+              isYou={user.login === currentLogin}
+            />
           ))}
         </div>
       )}

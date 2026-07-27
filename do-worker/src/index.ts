@@ -21,9 +21,16 @@ interface Position {
   id: string;
 }
 
+interface UserIdentity {
+  login: string;
+  name: string;
+  avatar: string;
+}
+
 interface PeerState {
   ws: WebSocket;
   position: Position;
+  user: UserIdentity | null;
   country: string;
   region: string;
   city: string;
@@ -48,6 +55,20 @@ export class GlobeRelayDO extends DurableObject<Env> {
   // ── fetch: handle WebSocket upgrades ──────────────────────────────//
 
   async fetch(request: Request): Promise<Response> {
+    // Non-WebSocket GET request → return list of active authenticated users
+    if (request.method === "GET" && request.headers.get("Upgrade") === null) {
+      const activeUsers: Array<{ login: string; name: string; avatar: string }> = [];
+      for (const [, peer] of this.peers) {
+        if (peer.user) {
+          activeUsers.push(peer.user);
+        }
+      }
+      return new Response(JSON.stringify({ activeUsers }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const upgrade = request.headers.get("Upgrade");
     if (!upgrade || upgrade.toLowerCase() !== "websocket") {
       return new Response("Expected WebSocket upgrade", { status: 426 });
@@ -81,9 +102,21 @@ export class GlobeRelayDO extends DurableObject<Env> {
     const id = crypto.randomUUID();
     const position: Position = { lat, lng, id };
 
+    // Extract optional user identity from headers (set by globe-ws.ts)
+    const login = request.headers.get("X-User-Login") ?? "";
+    const hasUser = login.length > 0;
+    const user: UserIdentity | null = hasUser
+      ? {
+          login,
+          name: request.headers.get("X-User-Name") ?? login,
+          avatar: request.headers.get("X-User-Avatar") ?? "",
+        }
+      : null;
+
     this.peers.set(id, {
       ws: server,
       position,
+      user,
       country: "",
       region: "",
       city: "",

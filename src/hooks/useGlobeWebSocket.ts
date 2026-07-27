@@ -64,7 +64,13 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host;
-    const url = `${protocol}//${host}/api/globe-ws`;
+
+    // Pass session token (if available) so the server can associate this
+    // WebSocket connection with an authenticated user for online-status tracking.
+    const token = localStorage.getItem("pocwu_session_token");
+    const url = token
+      ? `${protocol}//${host}/api/globe-ws?token=${encodeURIComponent(token)}`
+      : `${protocol}//${host}/api/globe-ws`;
 
     setConnectionStatus("connecting");
     const ws = new WebSocket(url);
@@ -137,6 +143,38 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     };
   }, []);
 
+  // ── Heartbeat ping ── keep ws_active:<login> KV key fresh ──────//
+  const heartbeatRef = useRef<ReturnType<typeof setInterval>>();
+  useEffect(() => {
+    if (connectionStatus !== "connected") {
+      if (heartbeatRef.current) {
+        clearInterval(heartbeatRef.current);
+        heartbeatRef.current = undefined;
+      }
+      return;
+    }
+
+    // Ping every 60 s to keep the presence key alive (TTL is 130 s)
+    const token = localStorage.getItem("pocwu_session_token");
+    if (!token) return;
+
+    const ping = () => {
+      fetch("/api/globe-ping", {
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => { /* best-effort */ });
+    };
+
+    ping(); // immediate first ping
+    heartbeatRef.current = setInterval(ping, 60_000);
+
+    return () => {
+      if (heartbeatRef.current) {
+        clearInterval(heartbeatRef.current);
+        heartbeatRef.current = undefined;
+      }
+    };
+  }, [connectionStatus]);
+
   useEffect(() => {
     mountedRef.current = true;
     connect();
@@ -144,6 +182,10 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     return () => {
       mountedRef.current = false;
       if (reconnectRef.current) clearTimeout(reconnectRef.current);
+      if (heartbeatRef.current) {
+        clearInterval(heartbeatRef.current);
+        heartbeatRef.current = undefined;
+      }
       if (wsRef.current) {
         wsRef.current.onclose = null; // suppress reconnect
         wsRef.current.close();
