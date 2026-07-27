@@ -53,45 +53,4 @@
   .glow-border:hover::before {
     opacity: 1;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  COBE v2 City Labels — CSS Anchor Positioning                       */
-  /*  Each marker with an `id` creates --cobe-{id} anchor and            */
-  /*  --cobe-visible-{id} variable (1 = facing camera, 0 = hidden).      */
-  /*  Visibility is applied via inline style in the component.           */
-  /* ------------------------------------------------------------------ */
-
-  .city-label {
-    position: absolute;
-    /** fallback layout when anchor unsupported — centered, hidden */
-    left: 50%;
-    top: 50%;
-    translate: -50% -50%;
-
-    font-size: 0.625rem;
-    line-height: 1.1;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
-    white-space: nowrap;
-    letter-spacing: 0.03em;
-    padding: 3px 7px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    pointer-events: none;
-
-    transition:
-      opacity 0.3s ease,
-      filter 0.3s ease;
-  }
-
-  @supports (anchor-name: none) or (position-anchor: --cobe-sf) {
-    .city-label {
-      left: anchor(center);
-      bottom: anchor(top);
-      translate: -50% 0;
-      margin-bottom: 5px;
-    }
-  }
 }
