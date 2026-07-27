@@ -197,7 +197,7 @@ export default function GlobeWithCountries({ className = "" }: GlobeWithCountrie
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el || webglFailed || countries.length === 0) return;
+    if (!el || webglFailed) return;
 
     // Destroy previous instance
     if (globeRef.current) {
@@ -269,7 +269,21 @@ export default function GlobeWithCountries({ className = "" }: GlobeWithCountrie
         globeRef.current = null;
       }
     };
-  }, [containerSize, countries, webglFailed]);
+  }, [containerSize, webglFailed]);
+
+  /* ---------------------------------------------------------------- */
+  /*  Update country polygons when GeoJSON data arrives                 */
+  /* ---------------------------------------------------------------- */
+
+  useEffect(() => {
+    const g = globeRef.current;
+    if (!g || countries.length === 0) return;
+    g.polygonsData(countries)
+      .polygonCapColor((feat: any) => countryColor(feat?.properties?.name ?? ""))
+      .polygonSideColor(() => "rgba(0,0,0,0)")
+      .polygonStrokeColor(() => "rgba(255,255,255,0.15)")
+      .polygonAltitude(0.01);
+  }, [countries]);
 
   /* ---------------------------------------------------------------- */
   /*  Update markers + arcs dynamically (peers / self move)            */

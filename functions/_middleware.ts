@@ -14,7 +14,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Permissions-Policy":
     "camera=(), microphone=()",
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.mongodb.net https://api.github.com; img-src 'self' data: blob: https://avatars.githubusercontent.com; font-src 'self' https://fonts.gstatic.com;",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.mongodb.net https://api.github.com https://unpkg.com; img-src 'self' data: blob: https://avatars.githubusercontent.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com;",
 };
 
 function corsHeaders(origin: string): Record<string, string> {
