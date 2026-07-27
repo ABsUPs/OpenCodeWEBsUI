@@ -11,7 +11,7 @@ export interface SessionUser {
 
 export interface SessionData {
   user: SessionUser;
-  orgs: string[];
+  orgs?: string[];
   createdAt: string;
 }
 

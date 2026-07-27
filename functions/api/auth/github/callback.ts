@@ -76,21 +76,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     name?: string;
   };
 
-  // Fetch user's orgs for namespace validation
-  const orgsResp = await fetch("https://api.github.com/user/orgs", {
-    headers: {
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "User-Agent": "OpenCodeABsUI-UX/1.0",
-    },
-  });
-  if (!orgsResp.ok) {
-    return json({ error: "Failed to fetch GitHub orgs" }, 502);
-  }
-  const orgs = (await orgsResp.json()) as Array<{ login: string }>;
+  // Note: we deliberately do NOT fetch the user's orgs. The OAuth scope
+  // is limited to read:user only — no org, repo, or write permissions.
+  // The token is discarded immediately after this callback.
 
-  // Create session token — note: the GitHub access_token is NOT stored.
-  // It was only needed momentarily for the two API calls above (user + orgs).
-  // Storing it would grant unnecessary GitHub API access if leaked.
+  // Create session token — the GitHub access_token is NOT stored.
   const sessionToken = generateToken();
   const sessionData = {
     user: {
@@ -99,7 +89,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       avatar: user.avatar_url,
       name: user.name ?? user.login,
     },
-    orgs: orgs.map((o) => o.login),
     createdAt: new Date().toISOString(),
   };
 

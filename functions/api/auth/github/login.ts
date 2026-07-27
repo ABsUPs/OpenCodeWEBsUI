@@ -26,7 +26,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const githubUrl = new URL("https://github.com/login/oauth/authorize");
   githubUrl.searchParams.set("client_id", clientId);
   githubUrl.searchParams.set("redirect_uri", redirectUri);
-  githubUrl.searchParams.set("scope", "read:user read:org");
+  // Minimal scope: only read public profile info (login, avatar, name).
+  // No repo, org, workflow, or write permissions are ever requested.
+  githubUrl.searchParams.set("scope", "read:user");
   githubUrl.searchParams.set("state", state);
 
   return Response.redirect(githubUrl.toString(), 302);
