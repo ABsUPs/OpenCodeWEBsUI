@@ -88,7 +88,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
   const orgs = (await orgsResp.json()) as Array<{ login: string }>;
 
-  // Create session token
+  // Create session token — note: the GitHub access_token is NOT stored.
+  // It was only needed momentarily for the two API calls above (user + orgs).
+  // Storing it would grant unnecessary GitHub API access if leaked.
   const sessionToken = generateToken();
   const sessionData = {
     user: {
@@ -98,7 +100,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       name: user.name ?? user.login,
     },
     orgs: orgs.map((o) => o.login),
-    token: tokenData.access_token,
     createdAt: new Date().toISOString(),
   };
 

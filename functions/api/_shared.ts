@@ -12,7 +12,6 @@ export interface SessionUser {
 export interface SessionData {
   user: SessionUser;
   orgs: string[];
-  token: string;
   createdAt: string;
 }
 
