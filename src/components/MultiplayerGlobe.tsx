@@ -18,9 +18,12 @@ import {
   useGlobeWebSocket,
   type ConnectionStatus,
 } from "../hooks/useGlobeWebSocket";
+import { getEffectiveDPR } from "../utils/browser.js";
+import cityData from "../data/cities.json";
+import "../styles/globe.css";
 
 /* ------------------------------------------------------------------ */
-/*  City data: label + location for markers + CSS anchor labels        */
+/*  City data: loaded from JSON                                        */
 /* ------------------------------------------------------------------ */
 
 interface City {
@@ -29,36 +32,20 @@ interface City {
   location: [number, number];
 }
 
-const CITIES: City[] = [
-  { id: "sf",      label: "San Francisco", location: [37.78, -122.44] },
-  { id: "nyc",     label: "New York",      location: [40.71, -74.01]  },
-  { id: "london",  label: "London",        location: [51.51, -0.13]   },
-  { id: "paris",   label: "Paris",         location: [48.86, 2.35]    },
-  { id: "tokyo",   label: "Tokyo",         location: [35.68, 139.65]  },
-  { id: "shanghai",label: "Shanghai",      location: [31.23, 121.47]  },
-  { id: "delhi",   label: "Delhi",         location: [28.61, 77.23]   },
-  { id: "sydney",  label: "Sydney",        location: [-33.87, 151.21] },
-  { id: "saopaulo",label: "São Paulo",    location: [-23.55, -46.63]  },
-  { id: "moscow",  label: "Moscow",        location: [55.76, 37.62]   },
-  { id: "dubai",   label: "Dubai",         location: [25.20, 55.27]   },
-  { id: "capeown", label: "Cape Town",     location: [-33.92, 18.42]  },
-  { id: "mexico",  label: "Mexico City",   location: [19.43, -99.13]  },
-  { id: "singapore",label: "Singapore",    location: [1.35, 103.82]   },
-  { id: "istanbul",label: "Istanbul",      location: [41.01, 28.96]   },
-];
+const CITIES: City[] = cityData.cities.map((c: { id: string; label: string; lat: number; lng: number }) => ({
+  id: c.id,
+  label: c.label,
+  location: [c.lat, c.lng] as [number, number],
+}));
 
-/** Decorative flight arcs between select city pairs. */
-const DECO_ARCS: Arc[] = [
-  { from: [37.78, -122.44], to: [35.68, 139.65] }, // SF → Tokyo
-  { from: [40.71, -74.01],  to: [51.51, -0.13] },  // NYC → London
-  { from: [51.51, -0.13],   to: [48.86, 2.35] },   // London → Paris
-  { from: [35.68, 139.65],  to: [-33.87, 151.21] },// Tokyo → Sydney
-  { from: [28.61, 77.23],   to: [31.23, 121.47] }, // Delhi → Shanghai
-  { from: [25.20, 55.27],   to: [1.35, 103.82] },  // Dubai → Singapore
-  { from: [-23.55, -46.63], to: [40.71, -74.01] }, // São Paulo → NYC
-  { from: [19.43, -99.13],  to: [55.76, 37.62] },  // Mexico City → Moscow
-  { from: [41.01, 28.96],   to: [25.20, 55.27] },  // Istanbul → Dubai
-];
+/** Decorative flight arcs built from JSON city index pairs. */
+const CITY_INDEX = new Map(CITIES.map((c, i) => [c.id, i]));
+const DECO_ARCS: Arc[] = cityData.arcs.map(
+  (a: { from: string; to: string }) => ({
+    from: CITIES[CITY_INDEX.get(a.from)!].location,
+    to: CITIES[CITY_INDEX.get(a.to)!].location,
+  }),
+);
 
 /* ------------------------------------------------------------------ */
 /*  Connection badge                                                   */
@@ -94,14 +81,43 @@ function ConnectionBadge({ status }: { status: ConnectionStatus }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Main component                                                     */
+/*  Main component — config sourced from cities.json                   */
 /* ------------------------------------------------------------------ */
 
-const AUTO_ROTATE_SPEED = 0.005;   // matches cobe.vercel.app
-const DRAG_SENSITIVITY = 0.005;
-const FRICTION = 0.95;
-const VELOCITY_THRESHOLD = 0.0001;
-const RES_SCALE = 2;
+const {
+  autoRotateSpeed: AUTO_ROTATE_SPEED,
+  dragSensitivity: DRAG_SENSITIVITY,
+  friction: FRICTION,
+  velocityThreshold: VELOCITY_THRESHOLD,
+  resolutionScale: RES_SCALE,
+  theta: GLOBE_THETA,
+  dark: GLOBE_DARK,
+  diffuse: GLOBE_DIFFUSE,
+  mapSamples: GLOBE_MAP_SAMPLES,
+  mapBrightness: GLOBE_MAP_BRIGHTNESS,
+  markerSize: GLOBE_MARKER_SIZE,
+  selfMarkerSize: GLOBE_SELF_MARKER_SIZE,
+  peerMarkerSize: GLOBE_PEER_MARKER_SIZE,
+  arcWidth: GLOBE_ARC_WIDTH,
+  arcHeight: GLOBE_ARC_HEIGHT,
+  markerElevation: GLOBE_MARKER_ELEVATION,
+} = cityData.globe;
+
+const {
+  base: BASE_COLOR,
+  marker: MARKER_COLOR,
+  glow: GLOW_COLOR,
+  arc: ARC_COLOR,
+  self: SELF_COLOR,
+  peerArc: PEER_ARC_COLOR,
+} = cityData.colors as {
+  base: [number, number, number];
+  marker: [number, number, number];
+  glow: [number, number, number];
+  arc: [number, number, number];
+  self: [number, number, number];
+  peerArc: [number, number, number];
+};
 
 interface MultiplayerGlobeProps {
   className?: string;
@@ -127,16 +143,13 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
   /*  Container ResizeObserver                                         */
   /* ---------------------------------------------------------------- */
 
-  const MAX_GLOBE = 480;
-  const MIN_GLOBE = 240;
-
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width } = entry.contentRect;
-        const size = Math.round(Math.min(Math.max(width, MIN_GLOBE), MAX_GLOBE));
+        const size = Math.round(Math.min(Math.max(width, cityData.globe.minGlobeSize), cityData.globe.maxGlobeSize));
         setContainerSize({ w: size, h: size });
       }
     });
@@ -153,14 +166,14 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
     if (!canvas || webglFailed) return;
 
     const size = containerSize.w;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = getEffectiveDPR();
     const internalSize = Math.round(size * dpr * RES_SCALE);
 
     canvas.width = internalSize;
     canvas.height = internalSize;
 
     let phi = 0;
-    let theta = 0.3;
+    let theta = GLOBE_THETA;
     let isDragging = false;
     let lastX = 0;
     let velocity = 0;
@@ -171,18 +184,18 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       height: internalSize,
       phi: 0,
       theta,
-      dark: 1,
-      diffuse: 0.9,
-      mapSamples: 16000,
-      mapBrightness: 5,
-      baseColor: [0.2, 0.2, 0.8],
-      markerColor: [0.1, 0.8, 1.0],
-      glowColor: [0.18, 0.18, 0.55],
+      dark: GLOBE_DARK,
+      diffuse: GLOBE_DIFFUSE,
+      mapSamples: GLOBE_MAP_SAMPLES,
+      mapBrightness: GLOBE_MAP_BRIGHTNESS,
+      baseColor: BASE_COLOR,
+      markerColor: MARKER_COLOR,
+      glowColor: GLOW_COLOR,
       scale: 1,
-      arcColor: [0.2, 0.6, 1.0],
-      arcWidth: 0.5,
-      arcHeight: 0.3,
-      markerElevation: 0.02,
+      arcColor: ARC_COLOR,
+      arcWidth: GLOBE_ARC_WIDTH,
+      arcHeight: GLOBE_ARC_HEIGHT,
+      markerElevation: GLOBE_MARKER_ELEVATION,
       // Seed with one dummy marker so the WebGL buffer is bound from frame 0.
       markers: [{ location: [0, 0], size: 0.001 }],
       arcs: [{ from: [0, 0], to: [0, 0] }],
@@ -202,25 +215,25 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       const markers: Marker[] = [];
 
       for (const city of CITIES) {
-        markers.push({ location: city.location, size: 0.025, id: city.id });
+        markers.push({ location: city.location, size: GLOBE_MARKER_SIZE, id: city.id });
       }
 
       // Self marker
       const self = selfRef.current;
       if (self) {
-        markers.push({ location: [self.lat, self.lng], size: 0.065, color: [0.3, 1.0, 1.0] });
+        markers.push({ location: [self.lat, self.lng], size: GLOBE_SELF_MARKER_SIZE, color: SELF_COLOR });
       }
 
       // Peer markers
       for (const peer of peersRef.current) {
-        markers.push({ location: [peer.lat, peer.lng], size: 0.04 });
+        markers.push({ location: [peer.lat, peer.lng], size: GLOBE_PEER_MARKER_SIZE });
       }
 
       // Arcs: decorative + self→peer
       const arcs: Arc[] = [...DECO_ARCS];
       if (self) {
         for (const peer of peersRef.current) {
-          arcs.push({ from: [self.lat, self.lng], to: [peer.lat, peer.lng], color: [0.3, 0.8, 1.0] });
+          arcs.push({ from: [self.lat, self.lng], to: [peer.lat, peer.lng], color: PEER_ARC_COLOR });
         }
       }
 

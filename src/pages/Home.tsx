@@ -1,6 +1,5 @@
-import { useEffect, useState, lazy, Suspense } from "react";
-
-const GlobeWithCountries = lazy(() => import("../components/GlobeWithCountries"));
+import { useEffect, useState } from "react";
+import MultiplayerGlobe from "../components/MultiplayerGlobe";
 
 const STATS = [
   { label: "Active Nodes", value: "2,847" },
@@ -46,9 +45,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Suspense fallback={<div className="h-[400px] w-full max-w-[480px] animate-pulse rounded-xl bg-white/5" />}>
-            <GlobeWithCountries />
-          </Suspense>
+          <MultiplayerGlobe />
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {STATS.map((stat) => (

@@ -22,13 +22,6 @@ function initFooterIntegrityGuard() {
   window.__absup_footer_integrity__ = true;
 
   let redirectTimer: ReturnType<typeof setTimeout> | null = null;
-  let startupPhase = true;
-
-  // Give React a generous window to fully mount the component tree
-  // before we start enforcing integrity.  Without this grace period the
-  // guard can fire during initial SPA hydration before the footer
-  // element exists, instantly redirecting the user to /F/.
-  setTimeout(() => { startupPhase = false; }, 3000);
 
   const checkFooterHealth = () => {
     const footer = document.getElementById(FOOTER_ID);
@@ -50,10 +43,8 @@ function initFooterIntegrityGuard() {
       }
     }
 
-    // Grace period: allow SPA to finish hydrating before redirecting
-    if (startupPhase) return;
-
     // Footer is missing or hidden — debounce redirect (200 ms)
+    // so React 18 StrictMode double-mounts don't false-positive.
     if (!redirectTimer) {
       redirectTimer = setTimeout(() => {
         window.location.href = "/F/";
