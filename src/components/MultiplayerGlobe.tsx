@@ -182,6 +182,9 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
   /*  Container ResizeObserver — responsive sizing                     */
   /* ---------------------------------------------------------------- */
 
+  const MAX_GLOBE = 480;
+  const MIN_GLOBE = 240;
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -189,8 +192,8 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width } = entry.contentRect;
-        // Square globe: size = min(width, 700) keeping it responsive
-        const size = Math.min(Math.max(width, 280), 700);
+        // Responsive square globe: smaller max for tighter integration
+        const size = Math.round(Math.min(Math.max(width, MIN_GLOBE), MAX_GLOBE));
         setContainerSize({ w: size, h: size });
       }
     });
@@ -227,12 +230,12 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       phi: 0,
       theta,
       dark: 1,
-      diffuse: 1.2,
+      diffuse: 0.9,
       mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor: [0.3, 0.3, 0.9],
+      mapBrightness: 5,
+      baseColor: [0.2, 0.2, 0.8],
       markerColor: [0.1, 0.8, 1.0],
-      glowColor: [0.12, 0.12, 0.4],
+      glowColor: [0.18, 0.18, 0.55],
       markers: [],
       scale: 1,
       onRender: (state) => {
@@ -255,7 +258,7 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
         if (self) {
           markers.push({
             location: [self.lat, self.lng],
-            size: 0.08,
+            size: 0.065,
             color: [0.3, 1.0, 1.0],
           });
         }
@@ -352,20 +355,33 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
   return (
     <div
       ref={containerRef}
-      className={`relative mx-auto flex w-full max-w-[700px] flex-col items-center gap-3 ${className}`}
+      className={`relative mx-auto flex w-full max-w-[480px] flex-col items-center gap-2 ${className}`}
     >
-      {/* COBE WebGL canvas — CSS fills container width */}
+      {/* Globe area with ambient glow ring */}
       <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
+        {/* Ambient glow beneath globe */}
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-40"
+          style={{
+            width: "85%",
+            height: "85%",
+            background:
+              "radial-gradient(circle at center, rgba(100,140,255,0.15) 0%, rgba(60,80,200,0.06) 40%, transparent 70%)",
+            filter: "blur(20px)",
+          }}
+        />
+
+        {/* COBE WebGL canvas */}
         <canvas
           ref={canvasRef}
-          className="h-full w-full"
+          className="relative z-[1] h-full w-full"
           style={{ contain: "layout paint size", display: webglFailed ? "none" : "block" }}
         />
 
-        {/* Arc overlay — same size, positioned on top */}
+        {/* Arc overlay — same size, on top */}
         <canvas
           ref={arcCanvasRef}
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 z-[2] h-full w-full"
           style={{ contain: "layout paint size" }}
         />
 
@@ -377,7 +393,7 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
 
       {/* Live counter */}
       {connectionStatus === "connected" && (
-        <span className="text-xs text-white/40 transition-opacity">
+        <span className="text-[11px] tracking-wider text-white/35 transition-opacity">
           {peerCount > 0
             ? `${peerCount} ${peerCount === 1 ? "person" : "people"} connected`
             : "No one else is here yet"}
