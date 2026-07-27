@@ -61,3 +61,6 @@ cloudflare-wnp-snapshot.txt
 OpenCodeWEBsPRD/
 **/OpenCodeWEBsPRD/
 **/PRD*.md
+
+# Playwright / testing screenshots
+*.png
