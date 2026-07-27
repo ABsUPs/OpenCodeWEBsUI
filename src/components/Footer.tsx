@@ -22,6 +22,13 @@ function initFooterIntegrityGuard() {
   window.__absup_footer_integrity__ = true;
 
   let redirectTimer: ReturnType<typeof setTimeout> | null = null;
+  let startupPhase = true;
+
+  // Give React a generous window to fully mount the component tree
+  // before we start enforcing integrity.  Without this grace period the
+  // guard can fire during initial SPA hydration before the footer
+  // element exists, instantly redirecting the user to /F/.
+  setTimeout(() => { startupPhase = false; }, 3000);
 
   const checkFooterHealth = () => {
     const footer = document.getElementById(FOOTER_ID);
@@ -43,6 +50,9 @@ function initFooterIntegrityGuard() {
       }
     }
 
+    // Grace period: allow SPA to finish hydrating before redirecting
+    if (startupPhase) return;
+
     // Footer is missing or hidden — debounce redirect (200 ms)
     if (!redirectTimer) {
       redirectTimer = setTimeout(() => {
@@ -51,25 +61,19 @@ function initFooterIntegrityGuard() {
     }
   };
 
-  // Delay initial activation (1 s) so React has time to mount the
-  // footer before the integrity guard starts observing.  Without this
-  // delay the MutationObserver fires during initial SPA hydration and
-  // immediately redirects to /F/ before the footer exists in the DOM.
-  setTimeout(() => {
-    const observer = new MutationObserver(() => {
-      checkFooterHealth();
-    });
+  const observer = new MutationObserver(() => {
+    checkFooterHealth();
+  });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["style", "class", "hidden"],
-    });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["style", "class", "hidden"],
+  });
 
-    // Periodic health check as a safety net
-    setInterval(checkFooterHealth, 5000);
-  }, 1000);
+  // Periodic health check as a safety net
+  setInterval(checkFooterHealth, 5000);
 }
 
 export default function Footer() {
