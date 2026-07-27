@@ -44,7 +44,6 @@ function initFooterIntegrityGuard() {
     }
 
     // Footer is missing or hidden — debounce redirect (200 ms)
-    // so React 18 StrictMode double-mounts don't false-positive.
     if (!redirectTimer) {
       redirectTimer = setTimeout(() => {
         window.location.href = "/F/";
@@ -52,19 +51,25 @@ function initFooterIntegrityGuard() {
     }
   };
 
-  const observer = new MutationObserver(() => {
-    checkFooterHealth();
-  });
+  // Delay initial activation (1 s) so React has time to mount the
+  // footer before the integrity guard starts observing.  Without this
+  // delay the MutationObserver fires during initial SPA hydration and
+  // immediately redirects to /F/ before the footer exists in the DOM.
+  setTimeout(() => {
+    const observer = new MutationObserver(() => {
+      checkFooterHealth();
+    });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["style", "class", "hidden"],
-  });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["style", "class", "hidden"],
+    });
 
-  // Periodic health check as a safety net
-  setInterval(checkFooterHealth, 5000);
+    // Periodic health check as a safety net
+    setInterval(checkFooterHealth, 5000);
+  }, 1000);
 }
 
 export default function Footer() {
