@@ -44,6 +44,18 @@ native/globe_math.wasm
 cmd/pocwu/pocwu
 cmd/pocwu/pocwu.exe
 
+# Pascal build artifacts
+tools/globe
+tools/globe.exe
+*.ppu
+*.o
+
+# D build artifacts
+tools/globe.exe
+
+# Crystal build artifacts
+*.dwarf
+
 # GitHub Actions (no workflow token scope)
 .github/
 

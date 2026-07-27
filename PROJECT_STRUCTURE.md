@@ -3,7 +3,7 @@
 > **Living document** — updated as the codebase evolves.
 > Last updated: 2026-07-27
 >
-> **Polyglot: 22 language types** — TypeScript · JavaScript · CSS · JSON · HTML · Rust · Python · Go · C · GLSL · Lua · Ruby · Zig · Kotlin · Nim · Shell · SQL · TOML · PowerShell · YAML · Dockerfile · Makefile
+> **Polyglot: 50 language types** — TypeScript · JavaScript · CSS · JSON · HTML · Rust · Python · Go · C · GLSL · Lua · Ruby · Zig · Kotlin · Nim · Shell · SQL · TOML · PowerShell · YAML · Dockerfile · Makefile · Dart · Swift · Haskell · Clojure · Elixir · OCaml · F# · Crystal · Racket · Perl · R · Julia · D · Pascal · Forth · CSV · SVG · GraphQL · XML · INI · EditorConfig · Handlebars · Nginx · Apache · Systemd · Procfile · WebManifest · htaccess
 
 ```
 OpenCodeWEBsUI/
@@ -164,8 +164,43 @@ OpenCodeWEBsUI/
 │                                 #   - add-marker / remove-marker broadcast
 │                                 #   - Geo from cf-* headers / X-Geo-* headers
 │
+├── tools/                        # 📁 Polyglot language modules (Haversine math in 15+ languages)
+│   ├── globe.dart                # Dart: Haversine distance
+│   ├── globe.swift               # Swift: Haversine distance
+│   ├── globe.hs                  # Haskell: Haversine + midpoint
+│   ├── globe.clj                 # Clojure: Haversine + PRD file listing
+│   ├── globe.exs                 # Elixir: Haversine + PRD directory check
+│   ├── globe.ml                  # OCaml: Haversine + project root detection
+│   ├── globe.fsx                 # F#: Haversine + file listing
+│   ├── globe.cr                  # Crystal: Haversine + gitignore check
+│   ├── globe.rkt                 # Racket: Haversine + midpoint interpolation
+│   ├── globe.pl                  # Perl: Haversine + PRD file count
+│   ├── globe.R                   # R: Haversine + PRD listing
+│   ├── globe.jl                  # Julia: Haversine + great-circle midpoint
+│   ├── globe.d                   # D: Haversine + Y-axis rotation
+│   ├── globe.pas                 # Pascal: Haversine + directory check
+│   ├── globe.fth                 # Forth: Haversine (stack-based)
+│   ├── pocwu.main.kts            # Kotlin: project validation
+│   └── pocwu.nim                 # Nim: health checks & stats
+│
+├── config/                       # 📁 Server & build configuration
+│   ├── build.ini                 # INI: globe params, colors, deploy settings
+│   ├── project.xml               # XML: full project metadata (polyglot, versions)
+│   ├── nginx.conf                # Nginx: reverse proxy + CSP + CORS (TS→nginx)
+│   ├── apache.conf               # Apache: virtual host + security headers
+│   └── pocwu.service             # Systemd: production service unit
+│
+├── api/                          # 📁 Additional API schemas
+│   ├── schema.graphql            # GraphQL: query/mutation types for all data
+│   └── messages.proto            # Protocol Buffers: message format (future)
+│
 ├── public/                       # 📁 Static assets
 │   ├── favicon.svg               # Site favicon
+│   ├── globe-icon.svg            # SVG: globe icon (converted from TSX inline SVG)
+│   ├── site.webmanifest          # PWA manifest (JSON)
+│   ├── robots.txt                # SEO crawling rules
+│   ├── .htaccess                 # Apache per-directory config (TS→htaccess)
+│   ├── index.hbs                 # Handlebars: HTML template
 │   ├── _headers                  # Security headers (CSP, HSTS, etc.)
 │   └── _redirects                # SPA fallback + redirect rules
 │

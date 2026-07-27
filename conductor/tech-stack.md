@@ -12,6 +12,13 @@
 All future development and optimization MUST use 11+ programming languages beyond the primary stack.
 Every language file must serve a genuine purpose in the project's build, deploy, runtime, or optimization pipeline.
 
+## TypeScript Minimization
+New development MUST minimize TypeScript usage to the greatest extent possible.
+Prefer JavaScript (+ JSDoc types), Rust WASM, Go, Python, C, GLSL, or any other
+language in the polyglot stack over TypeScript for all new code. Existing TypeScript
+files should not be rewritten, but all new features, utilities, and optimizations
+should use alternative languages.
+
 | # | Language | Location | Purpose |
 |---|----------|----------|---------|
 | 1 | Rust | `rswasm-globe-physics/` | WASM globe physics (Haversine, interpolation, rotation) |

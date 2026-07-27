@@ -1,0 +1,17 @@
+{
+  "name": "OpenCodeABs/UX",
+  "short_name": "OpenCodeABs",
+  "description": "Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure manager with multiplayer COBE globe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1b2a",
+  "theme_color": "#0055dc",
+  "icons": [
+    {
+      "src": "/globe-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
