@@ -13,6 +13,7 @@ const CommunityHubIndex = lazy(() => import("./pages/CommunityHubIndex"));
 const Servers = lazy(() => import("./pages/Servers"));
 const Users = lazy(() => import("./pages/Users"));
 const SecurityLanding = lazy(() => import("./pages/SecurityLanding"));
+const AGDashboard = lazy(() => import("./pages/AGDashboard"));
 
 // Minimal loading state — just a subtle pulse so layout stays stable
 function PageFallback() {
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/S" element={<Servers />} />
           <Route path="/U" element={<Users />} />
           <Route path="/F" element={<SecurityLanding />} />
+          <Route path="/ag" element={<AGDashboard />} />
           <Route path="*" element={<SecurityLanding />} />
         </Route>
       </Routes>
