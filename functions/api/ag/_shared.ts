@@ -7,6 +7,8 @@ export interface Env {
   SESSIONS_KV?: KVNamespace;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
+  /** GitHub App slug (e.g. "opencodewebsag") — set this in Pages dashboard env vars */
+  GITHUB_APP_SLUG?: string;
   /** Optional service binding to the opencodewebsag-worker for dashboard proxy */
   AG_WORKER?: Fetcher;
 }
