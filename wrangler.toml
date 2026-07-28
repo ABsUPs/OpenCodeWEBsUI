@@ -4,11 +4,8 @@ compatibility_flags = ["nodejs_compat"]
 
 pages_build_output_dir = "dist"
 
-# GitHub App slug for AG bot install flow — set in Pages dashboard env vars
-# vars = { GITHUB_APP_SLUG = "your-app-slug" }
-
 [env.production]
-vars = { ENVIRONMENT = "production" }
+vars = { ENVIRONMENT = "production", GITHUB_APP_SLUG = "opencodewebsag" }
 [[env.production.services]]
 binding = "GLOBE_DO"
 service = "pocwu-globe-relay"
