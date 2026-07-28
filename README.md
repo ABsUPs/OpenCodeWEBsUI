@@ -155,8 +155,8 @@ OpenCodeABsUI/UX bridges local developer environments with a 24/7 serverless clo
 ### Installation
 
 ```bash
-git clone https://github.com/ABsUPs/OpenCodeWEBsUI.git
-cd OpenCodeWEBsUI
+git clone https://github.com/OpenCodeWEB/UI.git
+cd UI
 npm install
 ```
 
@@ -246,7 +246,7 @@ The project is organized into four main layers:
 
 - **Core Maintainer:** [@ABsUP](https://github.com/ABsUP)
 - **Organization:** [@ABsUPs](https://github.com/ABsUPs)
-- **Repository:** [ABsUPs/OpenCodeWEBsUI](https://github.com/ABsUPs/OpenCodeWEBsUI)
+- **Repository:** [OpenCodeWEB/UI](https://github.com/OpenCodeWEB/UI)
 - **PRD Documents:** [`OpenCodeWEBsPRD/`](OpenCodeWEBsPRD/) (strictly local, gitignored)
 
 ---
@@ -257,4 +257,4 @@ The project is organized into four main layers:
 
 ---
 
-[🗄️⚡💝 ~ ABsUP.ORG](https://github.com/ABsUPs/OpenCodeWEBsUI)
+[🗄️⚡💝 ~ OpenCodeWEB/UI](https://github.com/OpenCodeWEB/UI)

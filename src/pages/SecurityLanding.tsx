@@ -202,7 +202,7 @@ export default function SecurityLanding() {
             Launch Dashboard
           </a>
           <a
-            href="https://github.com/ABsUPs/OpenCodeWEBsUI"
+            href="https://github.com/OpenCodeWEB/UI"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg border border-white/10 px-5 py-2.5 text-sm font-semibold text-white/60 transition-all hover:border-white/20 hover:text-white"

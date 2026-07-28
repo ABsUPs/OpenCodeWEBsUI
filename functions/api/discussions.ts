@@ -1,7 +1,7 @@
 /**
  * GET /api/discussions — proxy to GitHub Discussions GraphQL API
  *
- * Fetches discussions from the ABsUPs/OpenCodeWEBsUI repository.
+ * Fetches discussions from the OpenCodeWEB organization repositories.
  * Requires GITHUB_TOKEN env var (classic PAT with public_repo scope).
  *
  * Query params:
@@ -13,8 +13,8 @@ interface Env {
   GITHUB_TOKEN?: string;
 }
 
-const OWNER = "ABsUPs";
-const REPO = "OpenCodeWEBsUI";
+const OWNER = "OpenCodeWEB";
+const REPO = "UI";
 
 const DISCUSSIONS_QUERY = `
 query($owner: String!, $repo: String!, $first: Int!, $after: String) {

@@ -1,3 +1,3 @@
-module github.com/ABsUPs/OpenCodeWEBsUI/cmd/pocwu
+module github.com/OpenCodeWEB/UI/cmd/pocwu
 
 go 1.22
