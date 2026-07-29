@@ -27,11 +27,37 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
   }
 
-  // Gather installation info
-  const installations: Array<Record<string, unknown>> = [];
-  if (kv) {
+  // Try to proxy worker health check
+  let workerStatus = "unknown";
+  let installations: Array<Record<string, unknown>> = [];
+
+  if (env.AG_WORKER) {
     try {
-      // List all known installations from KV (independent of auth)
+      // Call worker health endpoint
+      const healthResp = await env.AG_WORKER.fetch("https://worker/health");
+      if (healthResp.ok) {
+        const healthData = (await healthResp.json()) as { status?: string };
+        workerStatus = healthData.status ?? "unknown";
+      } else {
+        workerStatus = "unreachable";
+      }
+
+      // Call worker installations endpoint (syncs from GitHub API)
+      const installResp = await env.AG_WORKER.fetch("https://worker/installations");
+      if (installResp.ok) {
+        const installData = (await installResp.json()) as {
+          installations?: Array<Record<string, unknown>>;
+        };
+        installations = installData.installations ?? [];
+      }
+    } catch {
+      workerStatus = "unreachable";
+    }
+  }
+
+  // Fallback: read from KV if worker is unreachable
+  if (installations.length === 0 && kv) {
+    try {
       const listed = await kv.list({ prefix: "ag_install:" });
       for (const key of listed.keys) {
         const installData = await kv.get(key.name);
@@ -46,22 +72,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }
     } catch {
       // List may not be supported in all environments
-    }
-  }
-
-  // Try to proxy worker health check
-  let workerStatus = "unknown";
-  if (env.AG_WORKER) {
-    try {
-      const healthResp = await env.AG_WORKER.fetch("https://worker/health");
-      if (healthResp.ok) {
-        const healthData = (await healthResp.json()) as { status?: string };
-        workerStatus = healthData.status ?? "unknown";
-      } else {
-        workerStatus = "unreachable";
-      }
-    } catch {
-      workerStatus = "unreachable";
     }
   }
 
