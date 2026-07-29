@@ -8,6 +8,8 @@ interface DashboardData {
     id: string;
     installationId: string;
     installedAt: string;
+    account: string;
+    accountType: string;
     [key: string]: unknown;
   }>;
   version: string;
@@ -147,14 +149,24 @@ export default function AGDashboard() {
                       className="rounded border border-slate-600 bg-slate-700/30 p-4"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-sm text-emerald-300">
-                          ID: {inst.installationId as string}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-slate-100">
+                            {(inst.account as string) ?? "Unknown"}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {(inst.accountType as string) ?? "—"} · ID:{" "}
+                            <span className="font-mono text-emerald-300">
+                              {inst.installationId as string}
+                            </span>
+                          </span>
+                        </div>
                         <span className="text-xs text-slate-500">
                           Installed:{" "}
-                          {new Date(
-                            inst.installedAt as string
-                          ).toLocaleDateString()}
+                          {inst.installedAt
+                            ? new Date(
+                                inst.installedAt as string
+                              ).toLocaleDateString()
+                            : "—"}
                         </span>
                       </div>
                     </div>

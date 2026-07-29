@@ -30,21 +30,22 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   // Gather installation info
   const installations: Array<Record<string, unknown>> = [];
   if (kv) {
-    if (userLogin) {
-      const userInstalls = await kv.get(`ag_user:${userLogin}:installations`);
-      if (userInstalls) {
-        try {
-          const parsed = JSON.parse(userInstalls) as { installations?: string[] };
-          for (const instId of parsed.installations ?? []) {
-            const installData = await kv.get(`ag_install:${instId}`);
-            if (installData) {
-              installations.push({ id: instId, ...JSON.parse(installData) });
-            }
+    try {
+      // List all known installations from KV (independent of auth)
+      const listed = await kv.list({ prefix: "ag_install:" });
+      for (const key of listed.keys) {
+        const installData = await kv.get(key.name);
+        if (installData) {
+          try {
+            const parsed = JSON.parse(installData) as Record<string, unknown>;
+            installations.push({ id: key.name.replace("ag_install:", ""), ...parsed });
+          } catch {
+            // skip malformed entries
           }
-        } catch {
-          // ignore
         }
       }
+    } catch {
+      // List may not be supported in all environments
     }
   }
 
