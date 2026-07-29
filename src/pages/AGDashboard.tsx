@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 interface DashboardData {
   loggedIn: boolean;
+  installationCount: number;
   user: string | null;
   workerStatus: string;
   installations: Array<{
@@ -93,19 +94,19 @@ export default function AGDashboard() {
               <h2 className="mb-4 text-lg font-semibold text-slate-200">
                 Connection Status
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <span className="text-sm text-slate-500">Auth Status</span>
+                  <span className="text-sm text-slate-500">App Status</span>
                   <p
-                    className={`text-lg font-bold ${data.loggedIn ? "text-green-400" : "text-yellow-400"}`}
+                    className={`text-lg font-bold ${data.installationCount > 0 ? "text-green-400" : "text-yellow-400"}`}
                   >
-                    {data.loggedIn ? "Authenticated" : "Not logged in"}
+                    {data.installationCount > 0 ? "Installed & Active" : "Not installed"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-sm text-slate-500">User</span>
+                  <span className="text-sm text-slate-500">Installations</span>
                   <p className="text-lg font-bold text-slate-200">
-                    {data.user ?? "—"}
+                    {data.installationCount}
                   </p>
                 </div>
                 <div>
@@ -129,12 +130,25 @@ export default function AGDashboard() {
                   </p>
                 </div>
               </div>
+              {data.loggedIn && data.user && (
+                <div className="mt-3 border-t border-slate-700 pt-3">
+                  <span className="text-sm text-slate-500">Logged in as</span>
+                  <p className="text-md font-semibold text-emerald-300">
+                    @{data.user}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Installations */}
             <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-6">
               <h2 className="mb-4 text-lg font-semibold text-slate-200">
                 Installations
+                {data.installationCount > 0 && (
+                  <span className="ml-2 rounded-full bg-emerald-900/60 px-2.5 py-0.5 text-sm font-medium text-emerald-300">
+                    {data.installationCount}
+                  </span>
+                )}
               </h2>
               {data.installations.length === 0 ? (
                 <p className="text-slate-500">

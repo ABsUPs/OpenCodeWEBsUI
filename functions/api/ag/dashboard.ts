@@ -67,6 +67,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   return json({
     loggedIn: userLogin !== null,
+    installationCount: installations.length,
     user: userLogin,
     workerStatus,
     installations,
