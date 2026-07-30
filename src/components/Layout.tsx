@@ -3,14 +3,21 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Footer from "./Footer";
 
-const NAV_LINKS = [
+interface NavLink {
+  to: string;
+  label: string;
+  external?: boolean;
+}
+
+const NAV_LINKS: NavLink[] = [
   { to: "/", label: "Home" },
   { to: "/T", label: "Templates" },
   { to: "/C", label: "Community" },
   { to: "/S", label: "Servers" },
   { to: "/U", label: "Users" },
+  { to: "https://pocwu.pages.dev/ag", label: "Agent", external: true },
   { to: "/F", label: "Features" },
-] as const;
+];
 
 /* ------------------------------------------------------------------ */
 /*  User avatar + dropdown                                             */
@@ -100,17 +107,30 @@ export default function Layout() {
             <span className="text-white/40">ABsUI</span>
           </Link>
 
-          <div className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-2 md:flex">
             {NAV_LINKS.map((link) => {
-              const isActive = location.pathname === link.to;
+              const isActive = !link.external && location.pathname === link.to;
+              if (link.external) {
+                return (
+                  <a
+                    key={link.to}
+                    href={link.to}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-150 active:scale-95 bg-white/10 text-white/80 shadow-sm shadow-black/10 hover:bg-white/20 hover:text-white hover:shadow-md hover:shadow-black/20"
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-150 active:scale-95 ${
                     isActive
-                      ? "bg-white/10 text-white"
-                      : "text-white/50 hover:bg-white/5 hover:text-white/80"
+                      ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-400"
+                      : "bg-white/10 text-white/80 shadow-sm shadow-black/10 hover:bg-white/20 hover:text-white hover:shadow-md hover:shadow-black/20"
                   }`}
                 >
                   {link.label}
@@ -148,7 +168,20 @@ export default function Layout() {
       {/* Mobile nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-white/5 bg-surface/95 backdrop-blur-xl md:hidden">
         {NAV_LINKS.map((link) => {
-          const isActive = location.pathname === link.to;
+          const isActive = !link.external && location.pathname === link.to;
+          if (link.external) {
+            return (
+              <a
+                key={link.to}
+                href={link.to}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors text-white/40 hover:text-white/60"
+              >
+                {link.label}
+              </a>
+            );
+          }
           return (
             <Link
               key={link.to}
