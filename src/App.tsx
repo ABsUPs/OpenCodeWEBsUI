@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 
 // Route-level code splitting — each page loads only when navigated to
@@ -14,6 +14,10 @@ const Servers = lazy(() => import("./pages/Servers"));
 const Users = lazy(() => import("./pages/Users"));
 const SecurityLanding = lazy(() => import("./pages/SecurityLanding"));
 const AGDashboard = lazy(() => import("./pages/AGDashboard"));
+const AGPrivacy = lazy(() => import("./pages/AGPrivacy"));
+const AGTerms = lazy(() => import("./pages/AGTerms"));
+const AGLicense = lazy(() => import("./pages/AGLicense"));
+const AGFeatures = lazy(() => import("./pages/AGFeatures"));
 
 // Minimal loading state — just a subtle pulse so layout stays stable
 function PageFallback() {
@@ -44,7 +48,18 @@ export default function App() {
           <Route path="/S" element={<Servers />} />
           <Route path="/U" element={<Users />} />
           <Route path="/F" element={<SecurityLanding />} />
+          {/* Trailing-slash redirects for /ag/ routes */}
+          <Route path="/ag/" element={<Navigate to="/ag" replace />} />
+          <Route path="/ag/privacy/" element={<Navigate to="/ag/privacy" replace />} />
+          <Route path="/ag/terms/" element={<Navigate to="/ag/terms" replace />} />
+          <Route path="/ag/license/" element={<Navigate to="/ag/license" replace />} />
+          <Route path="/ag/features/" element={<Navigate to="/ag/features" replace />} />
+
           <Route path="/ag" element={<AGDashboard />} />
+          <Route path="/ag/privacy" element={<AGPrivacy />} />
+          <Route path="/ag/terms" element={<AGTerms />} />
+          <Route path="/ag/license" element={<AGLicense />} />
+          <Route path="/ag/features" element={<AGFeatures />} />
           <Route path="*" element={<SecurityLanding />} />
         </Route>
       </Routes>

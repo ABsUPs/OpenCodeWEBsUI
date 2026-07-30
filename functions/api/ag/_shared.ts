@@ -9,8 +9,24 @@ export interface Env {
   GITHUB_CLIENT_SECRET?: string;
   /** GitHub App slug (e.g. "opencodewebsag") — set this in Pages dashboard env vars */
   GITHUB_APP_SLUG?: string;
-  /** Optional service binding to the opencodewebsag-worker for dashboard proxy */
+  /** Service binding to the opencodeweb gateway (routes to AG worker internally) */
   AG_WORKER?: Fetcher;
+  /** Internal gateway token for service-to-service auth (set in Cloudflare Pages env vars) */
+  INTERNAL_GATEWAY_TOKEN?: string;
+}
+
+/**
+ * Add the internal gateway token to a Headers object for service-binding calls.
+ * Returns the token value for logging/debug purposes.
+ */
+export function addGatewayToken(
+  headers: Headers,
+  token: string | undefined
+): string | undefined {
+  if (token) {
+    headers.set("X-Gateway-Token", token);
+  }
+  return token;
 }
 
 export function json(data: unknown, status = 200): Response {
