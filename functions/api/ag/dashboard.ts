@@ -4,7 +4,7 @@
  * Reads from AG_TOKENS_KV and optionally proxies the worker health check.
  */
 
-import { Env, json } from "./_shared";
+import { Env, json, addGatewayToken } from "./_shared";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { env, request } = context;
@@ -33,8 +33,16 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   if (env.AG_WORKER) {
     try {
+      // Pass internal gateway token for service-to-service auth
+      const healthHeaders = new Headers();
+      addGatewayToken(healthHeaders, env.INTERNAL_GATEWAY_TOKEN);
+
       // Call worker health endpoint
-      const healthResp = await env.AG_WORKER.fetch("https://worker/health");
+      const healthResp = await env.AG_WORKER.fetch(
+        new Request("https://worker/api/ag/health", {
+          headers: healthHeaders,
+        })
+      );
       if (healthResp.ok) {
         const healthData = (await healthResp.json()) as { status?: string };
         workerStatus = healthData.status ?? "unknown";
@@ -43,7 +51,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }
 
       // Call worker installations endpoint (syncs from GitHub API)
-      const installResp = await env.AG_WORKER.fetch("https://worker/installations");
+      const installHeaders = new Headers();
+      addGatewayToken(installHeaders, env.INTERNAL_GATEWAY_TOKEN);
+
+      const installResp = await env.AG_WORKER.fetch(
+        new Request("https://worker/api/ag/installations", {
+          headers: installHeaders,
+        })
+      );
       if (installResp.ok) {
         const installData = (await installResp.json()) as {
           installations?: Array<Record<string, unknown>>;

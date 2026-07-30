@@ -28,7 +28,7 @@ id = "4746613824af45aba9c043bc20cb09d7"
 
 [[env.production.services]]
 binding = "AG_WORKER"
-service = "opencodewebsag-worker"
+service = "opencodeweb"
 
 [[kv_namespaces]]
 binding = "SESSIONS_KV"
@@ -53,7 +53,7 @@ service = "pocwu-globe-relay"
 binding = "AG_TOKENS_KV"
 id = "4746613824af45aba9c043bc20cb09d7"
 
-# Service binding to the OpenCodeWEBsAG webhook worker
+# Service binding to the OpenCodeWEB gateway (routes to AG worker internally)
 [[services]]
 binding = "AG_WORKER"
-service = "opencodewebsag-worker"
+service = "opencodeweb"

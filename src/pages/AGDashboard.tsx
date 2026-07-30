@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 interface DashboardData {
   loggedIn: boolean;
@@ -24,7 +25,9 @@ export default function AGDashboard() {
   const loadDashboard = async () => {
     try {
       setLoading(true);
-      const session = new URLSearchParams(window.location.search).get("session");
+      const session = new URLSearchParams(window.location.search).get(
+        "session",
+      );
       const headers: Record<string, string> = {};
       if (session) {
         headers["Authorization"] = `Bearer ${session}`;
@@ -74,10 +77,56 @@ export default function AGDashboard() {
           </a>
         </div>
 
+        {/* Feature nav */}
+        <div className="mb-6 flex justify-center">
+          <Link
+            to="/ag/features"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-700/30 px-6 py-3 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-700/50 hover:text-emerald-200"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+            View All Features
+          </Link>
+        </div>
+
+        {/* Legal Links */}
+        <div className="mb-8 flex justify-center gap-4">
+          <Link
+            to="/ag/privacy"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/50 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-600/50 hover:text-emerald-400"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Privacy Policy
+          </Link>
+          <Link
+            to="/ag/terms"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/50 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-600/50 hover:text-emerald-400"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            Terms of Service
+          </Link>
+          <Link
+            to="/ag/license"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/50 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-600/50 hover:text-emerald-400"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            MIT License
+          </Link>
+        </div>
+
         {/* Status Card */}
         {loading && (
           <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-8 text-center">
-            <div className="animate-pulse text-slate-400">Loading dashboard...</div>
+            <div className="animate-pulse text-slate-400">
+              Loading dashboard...
+            </div>
           </div>
         )}
 
@@ -100,7 +149,9 @@ export default function AGDashboard() {
                   <p
                     className={`text-lg font-bold ${data.installationCount > 0 ? "text-green-400" : "text-yellow-400"}`}
                   >
-                    {data.installationCount > 0 ? "Installed & Active" : "Not installed"}
+                    {data.installationCount > 0
+                      ? "Installed & Active"
+                      : "Not installed"}
                   </p>
                 </div>
                 <div>
@@ -178,7 +229,7 @@ export default function AGDashboard() {
                           Installed:{" "}
                           {inst.installedAt
                             ? new Date(
-                                inst.installedAt as string
+                                inst.installedAt as string,
                               ).toLocaleDateString()
                             : "—"}
                         </span>
