@@ -13,11 +13,13 @@ const CommunityHubIndex = lazy(() => import("./pages/CommunityHubIndex"));
 const Servers = lazy(() => import("./pages/Servers"));
 const Users = lazy(() => import("./pages/Users"));
 const SecurityLanding = lazy(() => import("./pages/SecurityLanding"));
-const AGDashboard = lazy(() => import("./pages/AGDashboard"));
-const AGPrivacy = lazy(() => import("./pages/AGPrivacy"));
-const AGTerms = lazy(() => import("./pages/AGTerms"));
-const AGLicense = lazy(() => import("./pages/AGLicense"));
-const AGFeatures = lazy(() => import("./pages/AGFeatures"));
+
+// AG pages use direct imports (lazy loading not working for /ag route tree)
+import AGDashboard from "./pages/AGDashboard";
+import AGPrivacy from "./pages/AGPrivacy";
+import AGTerms from "./pages/AGTerms";
+import AGLicense from "./pages/AGLicense";
+import AGFeatures from "./pages/AGFeatures";
 
 // Minimal loading state — just a subtle pulse so layout stays stable
 function PageFallback() {

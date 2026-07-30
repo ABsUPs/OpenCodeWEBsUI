@@ -17,7 +17,9 @@
  */
 
 interface Env {
-  GLOBE_DO: Fetcher; // service binding to pocwu-globe-relay
+  GLOBE_DO: Fetcher; // service binding to opencodeweb (gateway) → pocwu-globe-relay
+  AG_WORKER: Fetcher; // alternate gateway binding
+  INTERNAL_GATEWAY_TOKEN?: string;
   SESSIONS_KV?: KVNamespace;
 }
 
@@ -64,6 +66,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     } catch {
       // Ignore — connect anonymously
     }
+  }
+
+  // Pass gateway token for service-to-service auth through the gateway
+  if (env.INTERNAL_GATEWAY_TOKEN) {
+    headers["X-Gateway-Token"] = env.INTERNAL_GATEWAY_TOKEN;
   }
 
   const doRequest = new Request(request.url, {
