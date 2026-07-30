@@ -69,7 +69,7 @@ export function deriveGunKey(sessionToken: string): string {
   let hash = 0;
   for (let i = 0; i < sessionToken.length; i++) {
     const char = sessionToken.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash |= 0;
   }
   return "user_" + Math.abs(hash).toString(36);

@@ -114,7 +114,9 @@ function ServerCard({ server }: { server: PublicServer }) {
         <div className="min-w-0 flex-1">
           {/* Top row */}
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-medium text-white/90">{server.name}</h3>
+            <h3 className="text-base font-medium text-white/90">
+              {server.name}
+            </h3>
             <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/30">
               {TYPE_LABELS[server.type] ?? server.type}
             </span>
@@ -124,7 +126,9 @@ function ServerCard({ server }: { server: PublicServer }) {
           </div>
 
           {/* Description */}
-          <p className={`mt-1 text-sm text-white/50 transition-all ${expanded ? "" : "line-clamp-1"}`}>
+          <p
+            className={`mt-1 text-sm text-white/50 transition-all ${expanded ? "" : "line-clamp-1"}`}
+          >
             {server.description}
           </p>
 
@@ -132,13 +136,17 @@ function ServerCard({ server }: { server: PublicServer }) {
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
             {/* Status dot */}
             <span className="inline-flex items-center gap-1.5 text-white/40">
-              <span className={`inline-block h-2 w-2 rounded-full ${STATUS_COLORS[server.status] ?? "bg-gray-500"}`} />
+              <span
+                className={`inline-block h-2 w-2 rounded-full ${STATUS_COLORS[server.status] ?? "bg-gray-500"}`}
+              />
               {server.status}
             </span>
             <span className="text-white/30">·</span>
             <span className="text-white/40">{server.region}</span>
             <span className="text-white/30">·</span>
-            <span className="text-white/40">{formatUptime(server.uptime)} uptime</span>
+            <span className="text-white/40">
+              {formatUptime(server.uptime)} uptime
+            </span>
             <span className="text-white/30">·</span>
             <span className="text-white/40">by {server.owner}</span>
             <span className="text-white/30">·</span>
@@ -170,7 +178,9 @@ function ServerCard({ server }: { server: PublicServer }) {
                   onClick={(e) => e.stopPropagation()}
                   className="rounded-lg bg-brand-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-brand-500"
                 >
-                  {server.type === "gun-relay" ? "Connect Relay" : "Open Server"}
+                  {server.type === "gun-relay"
+                    ? "Connect Relay"
+                    : "Open Server"}
                 </a>
               ) : (
                 <code className="rounded-lg bg-white/5 px-3 py-1.5 text-xs text-white/40">
@@ -190,7 +200,11 @@ function ServerCard({ server }: { server: PublicServer }) {
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+            />
           </svg>
         </div>
       </div>
@@ -202,7 +216,13 @@ function ServerCard({ server }: { server: PublicServer }) {
 /*  Filters                                                            */
 /* ------------------------------------------------------------------ */
 
-const FILTER_TYPES = ["All", "gun-relay", "sandbox-preview", "daemon-node", "custom"] as const;
+const FILTER_TYPES = [
+  "All",
+  "gun-relay",
+  "sandbox-preview",
+  "daemon-node",
+  "custom",
+] as const;
 
 /* ------------------------------------------------------------------ */
 /*  Main component                                                     */
@@ -286,13 +306,24 @@ export default function Servers() {
       });
       if (!r.ok) {
         const err = await r.json().catch(() => ({}));
-        throw new Error((err as { error?: string }).error ?? "Failed to register");
+        throw new Error(
+          (err as { error?: string }).error ?? "Failed to register",
+        );
       }
       setShowRegister(false);
-      setRegisterForm({ name: "", type: "custom", url: "", region: "", description: "", tags: "" });
+      setRegisterForm({
+        name: "",
+        type: "custom",
+        url: "",
+        region: "",
+        description: "",
+        tags: "",
+      });
       await fetchServers();
     } catch (err) {
-      setRegisterError(err instanceof Error ? err.message : "Registration failed");
+      setRegisterError(
+        err instanceof Error ? err.message : "Registration failed",
+      );
     } finally {
       setRegistering(false);
     }
@@ -317,8 +348,18 @@ export default function Servers() {
             onClick={() => setShowRegister(!showRegister)}
             className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
             </svg>
             Register Server
           </button>
@@ -328,14 +369,20 @@ export default function Servers() {
       {/* ── Register form ──────────────────────────────────── */}
       {showRegister && (
         <div className="mb-8 rounded-xl border border-white/10 bg-surface-raised p-5">
-          <h2 className="mb-4 text-sm font-semibold text-white/70">Register a Public Server</h2>
+          <h2 className="mb-4 text-sm font-semibold text-white/70">
+            Register a Public Server
+          </h2>
           <form onSubmit={handleRegister} className="space-y-3">
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs text-white/40">Name *</label>
+                <label className="mb-1 block text-xs text-white/40">
+                  Name *
+                </label>
                 <input
                   value={registerForm.name}
-                  onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setRegisterForm({ ...registerForm, name: e.target.value })
+                  }
                   required
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                   placeholder="My Server"
@@ -346,7 +393,10 @@ export default function Servers() {
                 <select
                   value={registerForm.type}
                   onChange={(e) =>
-                    setRegisterForm({ ...registerForm, type: e.target.value as PublicServer["type"] })
+                    setRegisterForm({
+                      ...registerForm,
+                      type: e.target.value as PublicServer["type"],
+                    })
                   }
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                 >
@@ -361,7 +411,9 @@ export default function Servers() {
               <label className="mb-1 block text-xs text-white/40">URL *</label>
               <input
                 value={registerForm.url}
-                onChange={(e) => setRegisterForm({ ...registerForm, url: e.target.value })}
+                onChange={(e) =>
+                  setRegisterForm({ ...registerForm, url: e.target.value })
+                }
                 required
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                 placeholder="https://myserver.com or wss://relay.example.com"
@@ -369,35 +421,52 @@ export default function Servers() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs text-white/40">Region</label>
+                <label className="mb-1 block text-xs text-white/40">
+                  Region
+                </label>
                 <input
                   value={registerForm.region}
-                  onChange={(e) => setRegisterForm({ ...registerForm, region: e.target.value })}
+                  onChange={(e) =>
+                    setRegisterForm({ ...registerForm, region: e.target.value })
+                  }
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                   placeholder="US East, Europe, Global…"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-white/40">Tags (comma-separated)</label>
+                <label className="mb-1 block text-xs text-white/40">
+                  Tags (comma-separated)
+                </label>
                 <input
                   value={registerForm.tags}
-                  onChange={(e) => setRegisterForm({ ...registerForm, tags: e.target.value })}
+                  onChange={(e) =>
+                    setRegisterForm({ ...registerForm, tags: e.target.value })
+                  }
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                   placeholder="gun, relay, europe"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs text-white/40">Description</label>
+              <label className="mb-1 block text-xs text-white/40">
+                Description
+              </label>
               <textarea
                 value={registerForm.description}
-                onChange={(e) => setRegisterForm({ ...registerForm, description: e.target.value })}
+                onChange={(e) =>
+                  setRegisterForm({
+                    ...registerForm,
+                    description: e.target.value,
+                  })
+                }
                 rows={2}
                 className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-500/50"
                 placeholder="What does your server do?"
               />
             </div>
-            {registerError && <p className="text-sm text-red-400">{registerError}</p>}
+            {registerError && (
+              <p className="text-sm text-red-400">{registerError}</p>
+            )}
             <div className="flex justify-end gap-3">
               <button
                 type="button"
@@ -408,7 +477,11 @@ export default function Servers() {
               </button>
               <button
                 type="submit"
-                disabled={registering || !registerForm.name.trim() || !registerForm.url.trim()}
+                disabled={
+                  registering ||
+                  !registerForm.name.trim() ||
+                  !registerForm.url.trim()
+                }
                 className="rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white hover:bg-brand-500 disabled:opacity-40"
               >
                 {registering ? "Registering…" : "Register"}
@@ -422,7 +495,7 @@ export default function Servers() {
       {!loading && !error && servers.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2">
           {FILTER_TYPES.map((t) => {
-            const count = t === "All" ? servers.length : typeCounts[t] ?? 0;
+            const count = t === "All" ? servers.length : (typeCounts[t] ?? 0);
             return (
               <button
                 key={t}
@@ -433,7 +506,7 @@ export default function Servers() {
                     : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60"
                 }`}
               >
-                {t === "All" ? "All" : TYPE_LABELS[t] ?? t}
+                {t === "All" ? "All" : (TYPE_LABELS[t] ?? t)}
                 <span className="ml-1.5 opacity-60">{count}</span>
               </button>
             );
@@ -457,11 +530,23 @@ export default function Servers() {
       {!loading && !error && filtered.length === 0 && (
         <div className="card-surface text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
-            <svg className="h-6 w-6 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.75L7.5 6.75l3.75-3.75m0 0l3.75 3.75L18 7.5" />
+            <svg
+              className="h-6 w-6 text-white/30"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.75L7.5 6.75l3.75-3.75m0 0l3.75 3.75L18 7.5"
+              />
             </svg>
           </div>
-          <h3 className="text-base font-medium text-white/70">No servers found</h3>
+          <h3 className="text-base font-medium text-white/70">
+            No servers found
+          </h3>
           <p className="mt-1 text-sm text-white/40">
             {filterType !== "All"
               ? `No ${TYPE_LABELS[filterType]?.toLowerCase() ?? filterType} servers registered yet.`
