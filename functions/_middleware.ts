@@ -36,8 +36,16 @@ function corsHeaders(origin: string): Record<string, string> {
 
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
+  const url = new URL(request.url);
   const origin = request.headers.get("Origin") ?? "";
   const method = request.method;
+
+  // ── API-only middleware ──────────────────────────────────────────────
+  // Static assets (CSS, JS, SVG, PNG, etc.) pass through without
+  // modification so we don't crash on immutable response headers.
+  if (!url.pathname.startsWith("/api/")) {
+    return next();
+  }
 
   // Handle CORS preflight
   if (method === "OPTIONS") {

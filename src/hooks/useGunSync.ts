@@ -112,7 +112,7 @@ export function useGunSync(options?: UseGunSyncOptions): UseGunSyncReturn {
     return () => {
       unsub();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -120,29 +120,33 @@ export function useGunSync(options?: UseGunSyncOptions): UseGunSyncReturn {
    * - GunDB posts are added to the list
    * - REST posts that also exist in GunDB are NOT duplicated (GunDB takes priority by timestamp)
    */
-  const mergeGunPosts = useCallback((items: DiscussionItem[]): DiscussionItem[] => {
-    const gunPosts = Array.from(gunPostsRef.current.values());
-    if (gunPosts.length === 0) return items;
+  const mergeGunPosts = useCallback(
+    (items: DiscussionItem[]): DiscussionItem[] => {
+      const gunPosts = Array.from(gunPostsRef.current.values());
+      if (gunPosts.length === 0) return items;
 
-    // Build a set of IDs already in the REST+GitHub list
-    const existingIds = new Set(items.map((i) => i.id));
+      // Build a set of IDs already in the REST+GitHub list
+      const existingIds = new Set(items.map((i) => i.id));
 
-    // Add GunDB posts not already present
-    const toAdd: GunPost[] = [];
-    for (const gp of gunPosts) {
-      if (!existingIds.has(gp.id)) {
-        toAdd.push(gp);
+      // Add GunDB posts not already present
+      const toAdd: GunPost[] = [];
+      for (const gp of gunPosts) {
+        if (!existingIds.has(gp.id)) {
+          toAdd.push(gp);
+        }
       }
-    }
 
-    if (toAdd.length === 0) return items;
+      if (toAdd.length === 0) return items;
 
-    const merged = [...items, ...toAdd].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+      const merged = [...items, ...toAdd].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
 
-    return merged;
-  }, []);
+      return merged;
+    },
+    [],
+  );
 
   const publishCreated = useCallback((post: LocalPost) => {
     const gp: GunPost = {

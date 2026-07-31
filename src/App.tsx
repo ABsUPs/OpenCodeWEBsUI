@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 
@@ -14,40 +14,34 @@ const Servers = lazy(() => import("./pages/Servers"));
 const Users = lazy(() => import("./pages/Users"));
 const SecurityLanding = lazy(() => import("./pages/SecurityLanding"));
 const AGDashboard = lazy(() => import("./pages/AGDashboard"));
-
-// Minimal loading state — just a subtle pulse so layout stays stable
-function PageFallback() {
-  return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
-        <span className="text-sm text-white/30">Loading…</span>
-      </div>
-    </div>
-  );
-}
+const AGPrivacy = lazy(() => import("./pages/AGPrivacy"));
+const AGTerms = lazy(() => import("./pages/AGTerms"));
+const AGLicense = lazy(() => import("./pages/AGLicense"));
+const AGFeatures = lazy(() => import("./pages/AGFeatures"));
 
 export default function App() {
   return (
-    <Suspense fallback={<PageFallback />}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/u/:username" element={<UserProfile />} />
-          <Route path="/o/:org/:company" element={<OrgShowcase />} />
-          <Route path="/s/:org/:project" element={<Sandbox />} />
-          <Route path="/T" element={<TemplateMarketplace />} />
-          <Route path="/C/💬" element={<CommunityHub />} />
-          <Route path="/C/:username/:project" element={<CommunityHub />} />
-          <Route path="/C/:username" element={<CommunityHub />} />
-          <Route path="/C" element={<CommunityHubIndex />} />
-          <Route path="/S" element={<Servers />} />
-          <Route path="/U" element={<Users />} />
-          <Route path="/F" element={<SecurityLanding />} />
-          <Route path="/ag" element={<AGDashboard />} />
-          <Route path="*" element={<SecurityLanding />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/u/:username" element={<UserProfile />} />
+        <Route path="/o/:org/:company" element={<OrgShowcase />} />
+        <Route path="/s/:org/:project" element={<Sandbox />} />
+        <Route path="/T" element={<TemplateMarketplace />} />
+        <Route path="/C/💬" element={<CommunityHub />} />
+        <Route path="/C/:username/:project" element={<CommunityHub />} />
+        <Route path="/C/:username" element={<CommunityHub />} />
+        <Route path="/C" element={<CommunityHubIndex />} />
+        <Route path="/S" element={<Servers />} />
+        <Route path="/U" element={<Users />} />
+        <Route path="/F" element={<SecurityLanding />} />
+        <Route path="/ag" element={<AGDashboard />} />
+        <Route path="/ag/privacy" element={<AGPrivacy />} />
+        <Route path="/ag/terms" element={<AGTerms />} />
+        <Route path="/ag/license" element={<AGLicense />} />
+        <Route path="/ag/features" element={<AGFeatures />} />
+        <Route path="*" element={<SecurityLanding />} />
+      </Route>
+    </Routes>
   );
 }

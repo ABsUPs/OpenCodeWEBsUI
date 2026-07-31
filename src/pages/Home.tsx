@@ -40,8 +40,9 @@ export default function Home() {
               <span className="text-white/40">/UX</span>
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-sm text-white/50 md:mt-5 md:text-base lg:text-lg">
-              Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure
-              manager. Bridging local dev environments with 24/7 serverless cloud runtime.
+              Enterprise-grade OpenCode ecosystem plugin and hybrid
+              infrastructure manager. Bridging local dev environments with 24/7
+              serverless cloud runtime.
             </p>
           </div>
 
@@ -50,7 +51,9 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {STATS.map((stat) => (
               <div key={stat.label} className="card-surface text-center">
-                <div className="text-2xl font-bold text-brand-400">{stat.value}</div>
+                <div className="text-2xl font-bold text-brand-400">
+                  {stat.value}
+                </div>
                 <div className="mt-1 text-sm text-white/40">{stat.label}</div>
               </div>
             ))}
