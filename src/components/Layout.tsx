@@ -1,23 +1,29 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Footer from "./Footer";
 
-interface NavLink {
-  to: string;
-  label: string;
-  external?: boolean;
-}
-
-const NAV_LINKS: NavLink[] = [
+const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/T", label: "Templates" },
   { to: "/C", label: "Community" },
   { to: "/S", label: "Servers" },
   { to: "/U", label: "Users" },
-  { to: "https://pocwu.pages.dev/ag", label: "Agent", external: true },
+  { to: "/ag", label: "Agent" },
   { to: "/F", label: "Features" },
-];
+] as const;
+
+// Minimal loading state — keeps header + footer mounted during lazy loads
+function PageFallback() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
+        <span className="text-sm text-white/30">Loading…</span>
+      </div>
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  User avatar + dropdown                                             */
@@ -130,30 +136,17 @@ export default function Layout() {
             <span className="text-white/40">ABsUI</span>
           </Link>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => {
-              const isActive = !link.external && location.pathname === link.to;
-              if (link.external) {
-                return (
-                  <a
-                    key={link.to}
-                    href={link.to}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-150 active:scale-95 bg-white/10 text-white/80 shadow-sm shadow-black/10 hover:bg-white/20 hover:text-white hover:shadow-md hover:shadow-black/20"
-                  >
-                    {link.label}
-                  </a>
-                );
-              }
+              const isActive = location.pathname === link.to;
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-150 active:scale-95 ${
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-400"
-                      : "bg-white/10 text-white/80 shadow-sm shadow-black/10 hover:bg-white/20 hover:text-white hover:shadow-md hover:shadow-black/20"
+                      ? "bg-white/10 text-white"
+                      : "text-white/50 hover:bg-white/5 hover:text-white/80"
                   }`}
                 >
                   {link.label}
@@ -189,26 +182,15 @@ export default function Layout() {
 
       {/* Main content */}
       <main className="flex-1">
-        <Outlet />
+        <Suspense fallback={<PageFallback />}>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Mobile nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-white/5 bg-surface/95 backdrop-blur-xl md:hidden">
         {NAV_LINKS.map((link) => {
-          const isActive = !link.external && location.pathname === link.to;
-          if (link.external) {
-            return (
-              <a
-                key={link.to}
-                href={link.to}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors text-white/40 hover:text-white/60"
-              >
-                {link.label}
-              </a>
-            );
-          }
+          const isActive = location.pathname === link.to;
           return (
             <Link
               key={link.to}
