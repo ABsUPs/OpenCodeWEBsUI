@@ -6,11 +6,9 @@ pages_build_output_dir = "dist"
 
 [env.production]
 vars = { ENVIRONMENT = "production", GITHUB_APP_SLUG = "opencodewebsag" }
-
-# INTERNAL_GATEWAY_TOKEN is set as a Pages secret (not in plain text)
 [[env.production.services]]
 binding = "GLOBE_DO"
-service = "opencodeweb"
+service = "pocwu-globe-relay"
 [[env.production.kv_namespaces]]
 binding = "SESSIONS_KV"
 id = "f664fcc8a19745f196948cd33ea2fe28"
@@ -30,7 +28,7 @@ id = "4746613824af45aba9c043bc20cb09d7"
 
 [[env.production.services]]
 binding = "AG_WORKER"
-service = "opencodeweb"
+service = "opencodewebsag-worker"
 
 [[kv_namespaces]]
 binding = "SESSIONS_KV"
@@ -45,17 +43,17 @@ binding = "DB"
 database_name = "opencodeabs"
 database_id = "ac9be9b0-bfd3-498d-b8d8-a38f4d6ecb32"
 
-# Service binding to the opencodeweb gateway (routes to pocwu-globe-relay internally)
+# Service binding to the GlobeRelayDO Worker (deployed separately from do-worker/)
 [[services]]
 binding = "GLOBE_DO"
-service = "opencodeweb"
+service = "pocwu-globe-relay"
 
 # KV namespace for AG bot tokens
 [[kv_namespaces]]
 binding = "AG_TOKENS_KV"
 id = "4746613824af45aba9c043bc20cb09d7"
 
-# Service binding to the OpenCodeWEB gateway (routes to AG worker internally)
+# Service binding to the OpenCodeWEBsAG webhook worker
 [[services]]
 binding = "AG_WORKER"
-service = "opencodeweb"
+service = "opencodewebsag-worker"
