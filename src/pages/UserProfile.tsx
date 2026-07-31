@@ -35,10 +35,15 @@ export default function UserProfile() {
         <h2 className="mb-6 text-xl font-semibold">Active Devices</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {DEVICE_STATUS.map((device) => (
-            <div key={device.name} className="card-surface flex items-center gap-4">
+            <div
+              key={device.name}
+              className="card-surface flex items-center gap-4"
+            >
               <div
                 className={`h-3 w-3 rounded-full ${
-                  device.status === "online" ? "bg-emerald-400 animate-pulse-glow" : "bg-white/20"
+                  device.status === "online"
+                    ? "bg-emerald-400 animate-pulse-glow"
+                    : "bg-white/20"
                 }`}
               />
               <div>
@@ -52,10 +57,13 @@ export default function UserProfile() {
 
       {/* Offline snapshot notice */}
       <section className="card-surface border-amber-500/20">
-        <h3 className="text-lg font-semibold text-amber-400">Offline Snapshot Mode</h3>
+        <h3 className="text-lg font-semibold text-amber-400">
+          Offline Snapshot Mode
+        </h3>
         <p className="mt-2 text-sm text-white/50">
-          When all devices are offline, this dashboard renders a read-only view from your
-          private GitHub fork state-backup branch. No server costs, zero downtime.
+          When all devices are offline, this dashboard renders a read-only view
+          from your private GitHub fork state-backup branch. No server costs,
+          zero downtime.
         </p>
       </section>
     </div>

@@ -93,7 +93,8 @@ function Dropdown<T extends string>({
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     };
     if (open) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -109,8 +110,18 @@ function Dropdown<T extends string>({
       >
         <span>{icon}</span>
         <span className="max-w-[140px] truncate">{current.label}</span>
-        <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        <svg
+          className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+          />
         </svg>
       </button>
 
@@ -200,7 +211,9 @@ function HubCard({ hub }: { hub: CommunityHub }) {
         {/* Header */}
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-base font-medium text-white/90 group-hover:text-brand-400 transition-colors">
-            {hub.project ? `${hub.owner}/${hub.project}` : `${hub.owner}/${hub.name}`}
+            {hub.project
+              ? `${hub.owner}/${hub.project}`
+              : `${hub.owner}/${hub.name}`}
           </h3>
           {hub.isRoot && (
             <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-400">
@@ -219,7 +232,9 @@ function HubCard({ hub }: { hub: CommunityHub }) {
         </div>
 
         {/* Description */}
-        <p className="mt-1 text-sm text-white/50 line-clamp-1">{hub.description}</p>
+        <p className="mt-1 text-sm text-white/50 line-clamp-1">
+          {hub.description}
+        </p>
 
         {/* Tags */}
         {hub.tags.length > 0 && (
@@ -253,7 +268,11 @@ function HubCard({ hub }: { hub: CommunityHub }) {
         stroke="currentColor"
         strokeWidth={2}
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+        />
       </svg>
     </Link>
   );
@@ -296,9 +315,10 @@ export default function CommunityHubIndex() {
   }, [fetchHubs]);
 
   // Filter by view mode
-  const byMode = viewMode === "global"
-    ? hubs.filter((h) => !h.project)
-    : hubs.filter((h) => h.project);
+  const byMode =
+    viewMode === "global"
+      ? hubs.filter((h) => !h.project)
+      : hubs.filter((h) => h.project);
 
   // Real-time search — matches username, org, project, and description
   const query = search.toLowerCase().trim();
@@ -331,12 +351,24 @@ export default function CommunityHubIndex() {
               Primary Button &bull; /C/💬 &bull; GitHub Discussions
             </p>
           </div>
-          <svg className="ml-auto h-5 w-5 shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          <svg
+            className="ml-auto h-5 w-5 shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-brand-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+            />
           </svg>
         </Link>
         <p className="mt-2 text-sm text-white/40">
-          {loading ? "Loading…" : `${filtered.length} hub${filtered.length === 1 ? "" : "s"}`}
+          {loading
+            ? "Loading…"
+            : `${filtered.length} hub${filtered.length === 1 ? "" : "s"}`}
         </p>
       </div>
 
@@ -375,7 +407,11 @@ export default function CommunityHubIndex() {
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
           </svg>
           <input
             value={search}
@@ -416,7 +452,10 @@ export default function CommunityHubIndex() {
       {!loading && error && (
         <div className="card-surface border-red-500/20 text-center">
           <p className="text-sm text-red-400">{error}</p>
-          <button onClick={fetchHubs} className="mt-3 rounded-lg bg-brand-600/20 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-600/30">
+          <button
+            onClick={fetchHubs}
+            className="mt-3 rounded-lg bg-brand-600/20 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-600/30"
+          >
             Try again
           </button>
         </div>
@@ -424,8 +463,18 @@ export default function CommunityHubIndex() {
       {!loading && !error && filtered.length === 0 && (
         <div className="card-surface text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
-            <svg className="h-6 w-6 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+            <svg
+              className="h-6 w-6 text-white/30"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
+              />
             </svg>
           </div>
           <h3 className="text-base font-medium text-white/70">No hubs found</h3>
@@ -450,9 +499,11 @@ export default function CommunityHubIndex() {
       <div className="mt-8 rounded-xl border border-white/5 bg-white/[0.02] p-4 text-xs text-white/30">
         <p className="mb-1 font-medium text-white/40">Ranking System</p>
         <p>
-          <span className="text-amber-400">★ #1 Root Hub</span> — ABsUPs/CommunityHub is permanently anchored at position #1.
-          All other hubs are ranked algorithmically by member engagement, discussion volume, and repository stars/forks.
-          Rankings are computed server-side and manual override is strictly disallowed.
+          <span className="text-amber-400">★ #1 Root Hub</span> —
+          ABsUPs/CommunityHub is permanently anchored at position #1. All other
+          hubs are ranked algorithmically by member engagement, discussion
+          volume, and repository stars/forks. Rankings are computed server-side
+          and manual override is strictly disallowed.
         </p>
       </div>
     </div>
