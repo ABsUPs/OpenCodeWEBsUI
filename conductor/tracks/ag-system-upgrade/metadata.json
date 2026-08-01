@@ -2,7 +2,7 @@
   "id": "ag-system-upgrade",
   "title": "System Upgrade: GitHub API version header + secret-leak CI scans",
   "type": "security",
-  "status": "in-progress",
+  "status": "complete",
   "repos": ["OpenCodeWEBsAG", "OpenCodeWEBsUI"],
   "created": "2026-08-01",
   "spec": "spec.md",
