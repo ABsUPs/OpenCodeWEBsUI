@@ -103,15 +103,39 @@ interface RouteInfo {
 }
 
 const ROUTES: RouteInfo[] = [
-  { path: "/", title: "Home Dashboard", desc: "3D Cobe globe, live metrics, leaderboards" },
-  { path: "/u/{username}", title: "Device Admin", desc: "Multi-device telemetry & management" },
-  { path: "/o/{org}/{company}", title: "Org Showcase", desc: "Company profile & AI workforce" },
-  { path: "/s/{org}/{project}", title: "Sandbox", desc: "Isolated preview & live server" },
+  {
+    path: "/",
+    title: "Home Dashboard",
+    desc: "3D Cobe globe, live metrics, leaderboards",
+  },
+  {
+    path: "/u/{username}",
+    title: "Device Admin",
+    desc: "Multi-device telemetry & management",
+  },
+  {
+    path: "/o/{org}/{company}",
+    title: "Org Showcase",
+    desc: "Company profile & AI workforce",
+  },
+  {
+    path: "/s/{org}/{project}",
+    title: "Sandbox",
+    desc: "Isolated preview & live server",
+  },
   { path: "/T", title: "Templates", desc: "Multi-agent template marketplace" },
-  { path: "/C", title: "Community Hub", desc: "Discussions with real-time P2P sync" },
+  {
+    path: "/C",
+    title: "Community Hub",
+    desc: "Discussions with real-time P2P sync",
+  },
   { path: "/S", title: "Servers", desc: "Public server directory & registry" },
   { path: "/U", title: "Users", desc: "Community user directory" },
-  { path: "/F", title: "Feature Showcase", desc: "Project overview & feature documentation" },
+  {
+    path: "/F",
+    title: "Feature Showcase",
+    desc: "Project overview & feature documentation",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -119,9 +143,19 @@ const ROUTES: RouteInfo[] = [
 /* ------------------------------------------------------------------ */
 
 const TECH = [
-  "React 18", "TypeScript", "Vite 5", "Tailwind CSS 3", "React Router 6",
-  "Cloudflare Pages", "Cloudflare D1", "Cloudflare KV", "GunDB", "Cobe WebGL",
-  "GitHub OAuth", "GitHub GraphQL API", "GitHub Discussions API",
+  "React 18",
+  "TypeScript",
+  "Vite 5",
+  "Tailwind CSS 3",
+  "React Router 6",
+  "Cloudflare Pages",
+  "Cloudflare D1",
+  "Cloudflare KV",
+  "GunDB",
+  "Cobe WebGL",
+  "GitHub OAuth",
+  "GitHub GraphQL API",
+  "GitHub Discussions API",
 ];
 
 /* ------------------------------------------------------------------ */
@@ -134,13 +168,27 @@ function FeatureCard({ feature }: { feature: Feature }) {
   const content = (
     <>
       <div className="mb-3 text-2xl">{feature.icon}</div>
-      <h3 className="mb-2 text-base font-semibold text-white/90">{feature.title}</h3>
+      <h3 className="mb-2 text-base font-semibold text-white/90">
+        {feature.title}
+      </h3>
       <p className="text-sm text-white/50 leading-relaxed">{feature.desc}</p>
       {feature.route && (
         <div className="mt-3 inline-flex items-center gap-1 text-xs text-brand-400">
-          <code className="rounded bg-brand-400/10 px-1.5 py-0.5">{feature.route}</code>
-          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          <code className="rounded bg-brand-400/10 px-1.5 py-0.5">
+            {feature.route}
+          </code>
+          <svg
+            className="h-3 w-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+            />
           </svg>
         </div>
       )}
@@ -190,9 +238,10 @@ export default function SecurityLanding() {
           <span className="text-white/30">/UX</span>
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-white/40 leading-relaxed">
-          Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure manager —
-          bridging local developer environments with a 24/7 serverless cloud runtime via a
-          decentralized GunDB P2P data synchronization layer.
+          Enterprise-grade OpenCode ecosystem plugin and hybrid infrastructure
+          manager — bridging local developer environments with a 24/7 serverless
+          cloud runtime via a decentralized GunDB P2P data synchronization
+          layer.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a
@@ -225,9 +274,11 @@ export default function SecurityLanding() {
               <span className="text-sm font-semibold">Access Restricted</span>
             </div>
             <p className="text-xs text-amber-300/60 leading-relaxed">
-              You may have landed here due to DOM tampering detection (branding integrity check failed),
-              invalid or expired credentials, or an attempt to access a restricted namespace without
-              proper authorization. If you believe this is an error, please return home and try again.
+              You may have landed here due to DOM tampering detection (branding
+              integrity check failed), invalid or expired credentials, or an
+              attempt to access a restricted namespace without proper
+              authorization. If you believe this is an error, please return home
+              and try again.
             </p>
           </div>
         )}
@@ -238,7 +289,10 @@ export default function SecurityLanding() {
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-white/90">Route Map</h2>
           <p className="mt-1 text-sm text-white/40">
-            Every route on <code className="rounded bg-white/5 px-1.5 py-0.5 text-brand-400">pocwu.pages.dev</code>
+            Every route on{" "}
+            <code className="rounded bg-white/5 px-1.5 py-0.5 text-brand-400">
+              pocwu.pages.dev
+            </code>
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -267,9 +321,12 @@ export default function SecurityLanding() {
       {/* ── Features ────────────────────────────────────────────── */}
       <section className="mb-20">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-white/90">Everything It Does</h2>
+          <h2 className="text-2xl font-bold text-white/90">
+            Everything It Does
+          </h2>
           <p className="mt-1 text-sm text-white/40">
-            A comprehensive ecosystem plugin with {FEATURES.length} core capabilities
+            A comprehensive ecosystem plugin with {FEATURES.length} core
+            capabilities
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -289,7 +346,7 @@ export default function SecurityLanding() {
         </div>
         <div className="overflow-x-auto rounded-xl border border-white/5 bg-white/[0.02] p-6">
           <pre className="text-xs text-white/50 leading-relaxed whitespace-pre font-mono">
-{`💻 Local Active Nodes          📡 GunDB P2P Graph            ☁️ Cloudflare / GitHub
+            {`💻 Local Active Nodes          📡 GunDB P2P Graph            ☁️ Cloudflare / GitHub
  (PC / Phone / Docker)         (Peer-to-Peer Sync)           (Serverless & Storage)
 ┌────────────────────┐        ┌────────────────────┐       ┌────────────────────┐
 │ • Heavy Processing │ ◄────► │ Real-Time Bi-Dir  │ ◄───► │ • 24/7 API Gateway │
@@ -333,11 +390,21 @@ export default function SecurityLanding() {
       <div className="text-center text-xs text-white/20">
         <p>
           Maintained by{" "}
-          <a href="https://github.com/ABsUP" target="_blank" rel="noopener noreferrer" className="text-brand-400/60 hover:text-brand-400">
+          <a
+            href="https://github.com/ABsUP"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-400/60 hover:text-brand-400"
+          >
             @ABsUP
           </a>{" "}
           &middot;{" "}
-          <a href="https://github.com/ABsUPs" target="_blank" rel="noopener noreferrer" className="text-brand-400/60 hover:text-brand-400">
+          <a
+            href="https://github.com/ABsUPs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-400/60 hover:text-brand-400"
+          >
             @ABsUPs
           </a>
         </p>

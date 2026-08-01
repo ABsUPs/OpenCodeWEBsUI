@@ -39,8 +39,9 @@ export default function OrgShowcase() {
           </p>
         </div>
         <p className="max-w-xl text-white/50">
-          Organization showcase with AI workforce metrics, live token throughput, and public
-          project cards. Managed under the <span className="text-brand-300">{org}</span> namespace.
+          Organization showcase with AI workforce metrics, live token
+          throughput, and public project cards. Managed under the{" "}
+          <span className="text-brand-300">{org}</span> namespace.
         </p>
       </div>
 
@@ -49,7 +50,10 @@ export default function OrgShowcase() {
         <h2 className="mb-6 text-xl font-semibold">AI Workforce</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {AGENT_ROLES.map((role) => (
-            <div key={role} className="card-surface flex items-center justify-between">
+            <div
+              key={role}
+              className="card-surface flex items-center justify-between"
+            >
               <span className="text-sm font-medium">{role}</span>
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
             </div>

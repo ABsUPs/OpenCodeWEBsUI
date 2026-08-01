@@ -66,7 +66,8 @@ const GITIGNORE_ENTRIES = [
 ];
 
 /** Marker string used to detect our block in .gitignore. */
-const GITIGNORE_MARKER = "# ── Local PRD Isolation (managed by prd-orchestrator) ──";
+const GITIGNORE_MARKER =
+  "# ── Local PRD Isolation (managed by prd-orchestrator) ──";
 
 /* ------------------------------------------------------------------ */
 /*  Step 1 — Path Resolution Engine (cross-platform)                   */
@@ -191,7 +192,8 @@ export function ensureGitignoreIsolation(): boolean {
 
   // Append our isolation block
   const newBlock = GITIGNORE_ENTRIES.join(os.EOL);
-  const separator = content.endsWith("\n") || content.length === 0 ? "" : os.EOL;
+  const separator =
+    content.endsWith("\n") || content.length === 0 ? "" : os.EOL;
   content += separator + newBlock + os.EOL;
 
   fs.writeFileSync(gitignorePath, content, "utf-8");
@@ -266,7 +268,9 @@ export function sweepAndRelocate(): Array<{
       prdPattern.test(entry) ||
       knownSubjects.has(entry as SubjectModule) ||
       entry === "universal-engine.md" ||
-      /(?:PRD|requirement|spec|roadmap|architecture|design|security|integrity|universal)/i.test(entry);
+      /(?:PRD|requirement|spec|roadmap|architecture|design|security|integrity|universal)/i.test(
+        entry,
+      );
 
     if (!isPRDFile) continue;
 
@@ -279,7 +283,9 @@ export function sweepAndRelocate(): Array<{
         const base = path.basename(entry, ext);
         const backup = path.join(prdDir, `${base}.${Date.now()}${ext}`);
         fs.renameSync(dest, backup);
-        console.log(`[prd-orchestrator] 📦 Backed up existing: ${dest} → ${backup}`);
+        console.log(
+          `[prd-orchestrator] 📦 Backed up existing: ${dest} → ${backup}`,
+        );
       }
 
       fs.renameSync(src, dest);
@@ -301,11 +307,11 @@ export function sweepAndRelocate(): Array<{
 
 /** Maps subject categories to their section numbers in PRD.md. */
 const SECTION_MAP: Record<string, { number: string; title: string }> = {
-  todo:      { number: "8",   title: "Roadmap & Acceptance Criteria" },
-  logic:     { number: "4",   title: "System Modules" },
-  design:    { number: "5",   title: "Design System" },
+  todo: { number: "8", title: "Roadmap & Acceptance Criteria" },
+  logic: { number: "4", title: "System Modules" },
+  design: { number: "5", title: "Design System" },
   community: { number: "4.7", title: "Community Hub Module" },
-  security:  { number: "7",   title: "Security & Privacy Guardrails" },
+  security: { number: "7", title: "Security & Privacy Guardrails" },
 };
 
 /**
@@ -348,7 +354,9 @@ export function routeAndWrite(
   }
 
   // Append mode: add content under the section heading
-  let existing = fs.existsSync(filepath) ? fs.readFileSync(filepath, "utf-8") : "";
+  let existing = fs.existsSync(filepath)
+    ? fs.readFileSync(filepath, "utf-8")
+    : "";
 
   // If PRD.md doesn't exist yet, create it with a title
   if (!existing.trim()) {
@@ -358,7 +366,9 @@ export function routeAndWrite(
   const block = `\n\n${heading}\n\n${content.trim()}\n`;
   fs.writeFileSync(filepath, existing + block, "utf-8");
 
-  console.log(`[prd-orchestrator] 📝 Appended to PRD.md under "${heading}" (${category})`);
+  console.log(
+    `[prd-orchestrator] 📝 Appended to PRD.md under "${heading}" (${category})`,
+  );
   return filepath;
 }
 
@@ -443,7 +453,9 @@ export function syncSubjectIndexes(): void {
     fs.writeFileSync(path.join(dir, filename), content, "utf-8");
   }
 
-  console.log(`[prd-orchestrator] 🔄 Synced ${Object.keys(indexes).length} subject index files → PRD.md`);
+  console.log(
+    `[prd-orchestrator] 🔄 Synced ${Object.keys(indexes).length} subject index files → PRD.md`,
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -461,7 +473,12 @@ export interface OrchestratorInitResult {
   /** Was the PRD directory created fresh? */
   directoryCreated: boolean;
   /** Files that were relocated during auto-sweep. */
-  relocated: Array<{ from: string; to: string; status: string; error?: string }>;
+  relocated: Array<{
+    from: string;
+    to: string;
+    status: string;
+    error?: string;
+  }>;
   /** Was .gitignore updated? */
   gitignoreUpdated: boolean;
   /** Files present in the PRD directory after init. */
@@ -492,11 +509,15 @@ export function initialisePRDOrchestrator(): OrchestratorInitResult {
 
   // Step 2 — Folder Verification & Creation
   const directoryCreated = ensurePRDDirectory();
-  console.log(`[prd-orchestrator]   Step 2 ✓  Directory ${directoryCreated ? "created" : "exists"}`);
+  console.log(
+    `[prd-orchestrator]   Step 2 ✓  Directory ${directoryCreated ? "created" : "exists"}`,
+  );
 
   // Step 3 — Privacy Guardrail (.gitignore)
   const gitignoreUpdated = ensureGitignoreIsolation();
-  console.log(`[prd-orchestrator]   Step 3 ✓  .gitignore ${gitignoreUpdated ? "updated" : "already isolated"}`);
+  console.log(
+    `[prd-orchestrator]   Step 3 ✓  .gitignore ${gitignoreUpdated ? "updated" : "already isolated"}`,
+  );
 
   // Step 4 — Auto-Sweep & Migration
   const relocated = sweepAndRelocate();
@@ -507,7 +528,9 @@ export function initialisePRDOrchestrator(): OrchestratorInitResult {
   // Step 6 — Sync subject indexes and report
   syncSubjectIndexes();
   const prdFiles = listPRDs();
-  console.log(`[prd-orchestrator]   Step 5–6 ✓  ${prdFiles.length} file(s) in store (master: PRD.md)`);
+  console.log(
+    `[prd-orchestrator]   Step 5–6 ✓  ${prdFiles.length} file(s) in store (master: PRD.md)`,
+  );
   console.log(`[prd-orchestrator] ✅ Initialisation complete.`);
 
   return {
@@ -541,6 +564,8 @@ export function getEnvironmentInfo(): {
     nodeVersion: process.version,
     projectRoot: getProjectRoot(),
     prdDirectory: getPRDDirectory(),
-    isTermux: process.env.TERMUX_VERSION !== undefined || process.env.PREFIX === "/data/data/com.termux/files/usr",
+    isTermux:
+      process.env.TERMUX_VERSION !== undefined ||
+      process.env.PREFIX === "/data/data/com.termux/files/usr",
   };
 }

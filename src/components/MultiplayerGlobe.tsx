@@ -32,11 +32,13 @@ interface City {
   location: [number, number];
 }
 
-const CITIES: City[] = cityData.cities.map((c: { id: string; label: string; lat: number; lng: number }) => ({
-  id: c.id,
-  label: c.label,
-  location: [c.lat, c.lng] as [number, number],
-}));
+const CITIES: City[] = cityData.cities.map(
+  (c: { id: string; label: string; lat: number; lng: number }) => ({
+    id: c.id,
+    label: c.label,
+    location: [c.lat, c.lng] as [number, number],
+  }),
+);
 
 /** Decorative flight arcs built from JSON city index pairs. */
 const CITY_INDEX = new Map(CITIES.map((c, i) => [c.id, i]));
@@ -123,7 +125,9 @@ interface MultiplayerGlobeProps {
   className?: string;
 }
 
-export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobeProps) {
+export default function MultiplayerGlobe({
+  className = "",
+}: MultiplayerGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
@@ -149,7 +153,12 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width } = entry.contentRect;
-        const size = Math.round(Math.min(Math.max(width, cityData.globe.minGlobeSize), cityData.globe.maxGlobeSize));
+        const size = Math.round(
+          Math.min(
+            Math.max(width, cityData.globe.minGlobeSize),
+            cityData.globe.maxGlobeSize,
+          ),
+        );
         setContainerSize({ w: size, h: size });
       }
     });
@@ -215,25 +224,40 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       const markers: Marker[] = [];
 
       for (const city of CITIES) {
-        markers.push({ location: city.location, size: GLOBE_MARKER_SIZE, id: city.id });
+        markers.push({
+          location: city.location,
+          size: GLOBE_MARKER_SIZE,
+          id: city.id,
+        });
       }
 
       // Self marker
       const self = selfRef.current;
       if (self) {
-        markers.push({ location: [self.lat, self.lng], size: GLOBE_SELF_MARKER_SIZE, color: SELF_COLOR });
+        markers.push({
+          location: [self.lat, self.lng],
+          size: GLOBE_SELF_MARKER_SIZE,
+          color: SELF_COLOR,
+        });
       }
 
       // Peer markers
       for (const peer of peersRef.current) {
-        markers.push({ location: [peer.lat, peer.lng], size: GLOBE_PEER_MARKER_SIZE });
+        markers.push({
+          location: [peer.lat, peer.lng],
+          size: GLOBE_PEER_MARKER_SIZE,
+        });
       }
 
       // Arcs: decorative + self→peer
       const arcs: Arc[] = [...DECO_ARCS];
       if (self) {
         for (const peer of peersRef.current) {
-          arcs.push({ from: [self.lat, self.lng], to: [peer.lat, peer.lng], color: PEER_ARC_COLOR });
+          arcs.push({
+            from: [self.lat, self.lng],
+            to: [peer.lat, peer.lng],
+            color: PEER_ARC_COLOR,
+          });
         }
       }
 
@@ -258,14 +282,19 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
       velocity = dx * DRAG_SENSITIVITY;
       lastX = e.clientX;
     };
-    const onUp = () => { isDragging = false; };
+    const onUp = () => {
+      isDragging = false;
+    };
 
     canvas.addEventListener("pointerdown", onDown);
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointerleave", onUp);
 
-    const onCtxLost = (e: Event) => { e.preventDefault(); setWebglFailed(true); };
+    const onCtxLost = (e: Event) => {
+      e.preventDefault();
+      setWebglFailed(true);
+    };
     canvas.addEventListener("webglcontextlost", onCtxLost);
 
     return () => {
@@ -305,7 +334,10 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
         <canvas
           ref={canvasRef}
           className="relative z-[1] h-full w-full"
-          style={{ contain: "layout paint size", display: webglFailed ? "none" : "block" }}
+          style={{
+            contain: "layout paint size",
+            display: webglFailed ? "none" : "block",
+          }}
         />
 
         {/* CSS Anchor Positioning labels for city names */}
@@ -321,8 +353,10 @@ export default function MultiplayerGlobe({ className = "" }: MultiplayerGlobePro
               className="city-label"
               style={{
                 positionAnchor: `--cobe-${city.id}` as unknown as string,
-                opacity: `var(--cobe-visible-${city.id}, 0)` as unknown as number,
-                filter: `blur(calc((1 - var(--cobe-visible-${city.id}, 0)) * 6px))` as unknown as string,
+                opacity:
+                  `var(--cobe-visible-${city.id}, 0)` as unknown as number,
+                filter:
+                  `blur(calc((1 - var(--cobe-visible-${city.id}, 0)) * 6px))` as unknown as string,
               }}
             >
               {city.label}
