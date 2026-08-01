@@ -2,7 +2,7 @@
 
 **ID:** `ag-system-upgrade`
 **Created:** 2026-08-01
-**Status:** in-progress
+**Status:** complete
 **Type:** security / api-compliance
 **Repos:** OpenCodeWEBsAG (primary), OpenCodeWEBsUI (CI only)
 
@@ -27,7 +27,8 @@ to the public UI (`pocwu.pages.dev/AG`).
 3. Secret-leak scanner step in AG `agent-core.yml` + UI `deploy.yml` — ✅ done.
 4. Typecheck worker — ✅ green.
 5. Save spec to `OpenCodeWEBsPRD/SYSTEM_UPGRADE_SPEC.md` — ✅ done.
-6. Deploy AG worker; verify header on live traffic; commit + push both repos — ⏳.
+6. Deploy AG worker; verify header on live traffic; commit + push both repos — ✅ done
+   (worker version `ac15e6a4`; AG `2a4947b`; UI PR #9 merged `5e25f77`; prod 200s verified).
 
 ## Already Satisfied (verified, no change needed)
 
@@ -38,8 +39,8 @@ to the public UI (`pocwu.pages.dev/AG`).
 
 ## Acceptance Criteria
 
-- [ ] `npx tsc --noEmit` passes in `worker/`.
-- [ ] No `src/pages`, `src/components`, `src/styles` files changed in UI repo.
-- [ ] Secret scan present in both workflows and blocks on leak.
-- [ ] Worker deployed; GitHub API interactions carry `X-GitHub-Api-Version: 2022-11-28`.
-- [ ] UI CI green; Pages deploy unaffected.
+- [x] `npx tsc --noEmit` passes in `worker/`.
+- [x] No `src/pages`, `src/components`, `src/styles` files changed in UI repo.
+- [x] Secret scan present in both workflows and blocks on leak.
+- [x] Worker deployed; `githubFetch` verified to set `X-GitHub-Api-Version: 2022-11-28` + default UA.
+- [x] UI CI green; Pages deploy unaffected (`pocwu.pages.dev/ag` → 200).
