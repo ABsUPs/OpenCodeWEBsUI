@@ -1,0 +1,11 @@
+{
+  "id": "ag-metrics-leaderboard",
+  "title": "AG Metrics & Contributor Leaderboard",
+  "status": "complete",
+  "priority": "high",
+  "createdAt": "2026-08-01",
+  "completedAt": "2026-08-01",
+  "source": "OpenCodeWEBsPRD/METRICS_LEADERBOARD_PRD.md",
+  "scope": ["opencodewebsag-worker", "opencodeweb-gateway", "pocwu-pages", "spa-dashboard"],
+  "notes": "E2E verified. Real-event recording (webhook → metrics) implemented but only observable when a push lands on a connected repo."
+}

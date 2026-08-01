@@ -29,10 +29,7 @@ export interface PeerPosition {
 }
 
 export type ConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "disconnected"
-  | "error";
+  "connecting" | "connected" | "disconnected" | "error";
 
 interface UseGlobeWebSocketReturn {
   /** ALL known positions including self (self has self=true) */
@@ -77,7 +74,10 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      if (!mountedRef.current) { ws.close(); return; }
+      if (!mountedRef.current) {
+        ws.close();
+        return;
+      }
       setConnectionStatus("connected");
     };
 
@@ -161,7 +161,9 @@ export function useGlobeWebSocket(): UseGlobeWebSocketReturn {
     const ping = () => {
       fetch("/api/globe-ping", {
         headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => { /* best-effort */ });
+      }).catch(() => {
+        /* best-effort */
+      });
     };
 
     ping(); // immediate first ping
