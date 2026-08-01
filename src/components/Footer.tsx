@@ -13,17 +13,30 @@ declare global {
  * Runs a MutationObserver that ensures the branding footer
  * is never removed or hidden. On tamper, redirects to /F/.
  *
- * Uses a debounce (200 ms) so React 18 StrictMode double-mount
- * cycles don't trigger false-positive redirects.
+ * Hardened against false positives: a 2.5 s boot grace period plus a
+ * 1 s debounce mean transient render states (cold loads, lazy chunks,
+ * layout thrash) can never trigger a redirect — only a persistent,
+ * deliberate removal/hide of the branding will.
  */
 function initFooterIntegrityGuard() {
   if (typeof window === "undefined") return;
   if (window.__absup_footer_integrity__) return;
   window.__absup_footer_integrity__ = true;
 
+  // Only redirect when the footer has been missing/hidden for a full second —
+  // a genuine tamper persists, but transient states (cold-load layout thrash,
+  // lazy chunk commits, first-paint offsets) do not.
+  const REDIRECT_DELAY = 1000;
+  // Skip health checks entirely during initial app boot so slow cold loads
+  // (fonts, route chunks, stylesheets) can never false-positive.
+  const GRACE_PERIOD = 2500;
+  const bootedAt = Date.now();
+
   let redirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   const checkFooterHealth = () => {
+    if (Date.now() - bootedAt < GRACE_PERIOD) return;
+
     const footer = document.getElementById(FOOTER_ID);
 
     // Footer is present AND visible → cancel any pending redirect
@@ -43,12 +56,13 @@ function initFooterIntegrityGuard() {
       }
     }
 
-    // Footer is missing or hidden — debounce redirect (200 ms)
-    // so React 18 StrictMode double-mounts don't false-positive.
+    // Footer is missing or hidden — debounce redirect so transient
+    // render states don't false-positive.
     if (!redirectTimer) {
       redirectTimer = setTimeout(() => {
+        redirectTimer = null;
         window.location.href = "/F/";
-      }, 200);
+      }, REDIRECT_DELAY);
     }
   };
 
