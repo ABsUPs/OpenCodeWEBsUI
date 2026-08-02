@@ -38,7 +38,7 @@ export default function AGTerms() {
         {/* Intro */}
         <div className="mb-8 rounded-lg border border-slate-700 bg-slate-800/50 p-6">
           <p className="leading-relaxed text-slate-300">
-            By installing and authorizing OpenCodeWEBsAG, you agree to the
+            By installing and authorizing OpenCodeWEB, you agree to the
             following terms.
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function AGTerms() {
               1. License & Usage
             </h2>
             <p className="leading-relaxed text-slate-400">
-              OpenCodeWEBsAG is granted permission to inspect repository
+              OpenCodeWEB is granted permission to inspect repository
               contents, generate snapshot backup branches (
               <code className="rounded bg-slate-700/60 px-1.5 py-0.5 font-mono text-xs text-emerald-300">
                 backup/opencode-ag-*
@@ -67,7 +67,7 @@ export default function AGTerms() {
               2. Limitation of Liability
             </h2>
             <p className="leading-relaxed text-slate-400">
-              OpenCodeWEBsAG is provided{" "}
+              OpenCodeWEB is provided{" "}
               <strong className="text-slate-300">"as is"</strong> without
               warranty of any kind. While the bot enforces mandatory
               pre-mutation snapshots prior to code modifications, the
@@ -82,7 +82,7 @@ export default function AGTerms() {
               3. Acceptable Use
             </h2>
             <p className="leading-relaxed text-slate-400">
-              You agree not to use OpenCodeWEBsAG to:
+              You agree not to use OpenCodeWEB to:
             </p>
             <ul className="mt-3 space-y-2 text-slate-400">
               <li className="flex items-start gap-2">
