@@ -38,7 +38,7 @@ export default function AGPrivacy() {
         {/* Intro */}
         <div className="mb-8 rounded-lg border border-slate-700 bg-slate-800/50 p-6">
           <p className="leading-relaxed text-slate-300">
-            OpenCodeWEBsAG ("we", "bot", "service") is committed to protecting
+            OpenCodeWEB ("we", "bot", "service") is committed to protecting
             the privacy and security of your repositories.
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function AGPrivacy() {
               1. Data Collection
             </h2>
             <p className="leading-relaxed text-slate-400">
-              OpenCodeWEBsAG processes source code, commit metadata, and
+              OpenCodeWEB processes source code, commit metadata, and
               execution triggers solely to perform automated AST auditing,
               static code analysis, and snapshot backups.
             </p>
@@ -115,7 +115,7 @@ export default function AGPrivacy() {
                 Installed GitHub Apps
               </strong>{" "}
               &rarr;{" "}
-              <strong className="text-slate-300">OpenCodeWEBsAG</strong> &rarr;{" "}
+              <strong className="text-slate-300">OpenCodeWEB</strong> &rarr;{" "}
               <strong className="text-rose-400">Uninstall</strong>.
             </p>
           </section>

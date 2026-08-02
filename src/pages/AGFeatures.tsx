@@ -19,7 +19,7 @@ const FEATURES = [
     icon: "✍️",
     title: "Dynamic Multi-Author Commit Standard",
     description:
-      "Automatically attributes commits to ABsUP as Primary Author, OpenCodeWEBsAG[bot] as Co-Author, and dynamically captures the active triggering user via ${{ github.actor }}.",
+      "Automatically attributes commits to ABsUP as Primary Author, OpenCodeWEB[bot] as Co-Author, and dynamically captures the active triggering user via ${{ github.actor }}.",
     color: "purple",
   },
   {
@@ -95,7 +95,7 @@ export default function AGFeatures() {
             Features
           </h1>
           <p className="mt-2 text-slate-400">
-            OpenCodeWEBsAG — Autonomous GitHub Bot capabilities
+            OpenCodeWEB — Autonomous GitHub Bot capabilities
           </p>
         </div>
 

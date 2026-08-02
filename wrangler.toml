@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
 [env.production]
-vars = { ENVIRONMENT = "production", GITHUB_APP_SLUG = "opencodewebsag" }
+vars = { ENVIRONMENT = "production", GITHUB_APP_SLUG = "opencodeweb" }
 [[env.production.services]]
 binding = "GLOBE_DO"
 service = "pocwu-globe-relay"
