@@ -444,7 +444,11 @@ export default function AGDashboard() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2">
                                 <a
-                                  href={`https://github.com/${c.username}`}
+                                  href={
+                                    c.username === "OpenCodeWEBsAG"
+                                      ? "https://github.com/apps/opencodewebsag"
+                                      : `https://github.com/${c.username}`
+                                  }
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="truncate font-semibold text-slate-100 hover:text-emerald-300"
