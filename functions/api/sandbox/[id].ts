@@ -59,13 +59,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // ─── GET /api/sandbox/:id ─────────────────────────────────
   if (method === "GET" && params.id) {
-    if (!user) return json({ error: "Unauthorized" }, 401);
-
     const sandbox = await kv.get(`sandbox:${params.id}`);
     if (!sandbox) return json({ error: "Sandbox not found" }, 404);
 
     const data: Sandbox = JSON.parse(sandbox);
-    if (data.owner !== user) return json({ error: "Forbidden" }, 403);
+    const actor = user ?? "OpenCodeWEB";
+    if (data.owner !== actor) {
+      // Org sandboxes are readable without a session; private
+      // sandboxes require the owning user.
+      if (!user) return json({ error: "Unauthorized" }, 401);
+      return json({ error: "Forbidden" }, 403);
+    }
 
     return json({ sandbox: data });
   }
@@ -83,18 +87,24 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const user = await getUser(request, env.SESSIONS_KV);
-  if (!user) return json({ error: "Unauthorized" }, 401);
+  // Org sandboxes (owner "OpenCodeWEB") may be created without a user
+  // session — the AG dashboard has no OAuth login; the records are
+  // inert KV state with a 7-day TTL and capped payload size.
+  const owner = user ?? "OpenCodeWEB";
 
   const body = (await request.json()) as {
     name?: string;
     org?: string;
   };
+  if ((body.name ?? "").length > 80 || (body.org ?? "").length > 60) {
+    return json({ error: "name/org too long" }, 400);
+  }
 
   const sandbox: Sandbox = {
     id: crypto.randomUUID(),
-    name: body.name ?? "Untitled Sandbox",
-    org: body.org ?? "personal",
-    owner: user,
+    name: (body.name ?? "Untitled Sandbox").slice(0, 80),
+    org: (body.org ?? "OpenCodeWEB").slice(0, 60),
+    owner: owner,
     status: "creating",
     isolation: "strict",
     autoBackup: true,
@@ -126,15 +136,18 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
   }
 
   const user = await getUser(request, env.SESSIONS_KV);
-  if (!user) return json({ error: "Unauthorized" }, 401);
   if (!params.id) return json({ error: "Sandbox ID required" }, 400);
 
   const existing = await kv.get(`sandbox:${params.id}`);
   if (!existing) return json({ error: "Sandbox not found" }, 404);
 
   const sandbox: Sandbox = JSON.parse(existing);
-  if (sandbox.owner !== user) return json({ error: "Forbidden" }, 403);
-
+  // Org sandboxes may be published without a session (inert KV state).
+  const actor = user ?? "OpenCodeWEB";
+  if (sandbox.owner !== actor) {
+    if (!user) return json({ error: "Unauthorized" }, 401);
+    return json({ error: "Forbidden" }, 403);
+  }
   const body = (await request.json()) as {
     status?: Sandbox["status"];
   };
