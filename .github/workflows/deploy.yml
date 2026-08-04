@@ -160,7 +160,7 @@ jobs:
           commit_message: |
             robot: OpenCodeWEBsUI automated build & ledger update [skip ci]
 
-            Co-authored-by: OpenCodeWEBsAG <IOpenCodeWEBsAG@users.noreply.github.com>
+            Co-authored-by: opencodeweb[bot] <311941023+opencodeweb[bot]@users.noreply.github.com>
             Co-authored-by: OpenCodeWEB <OpenCodeWEB@users.noreply.github.com>
           branch: ${{ github.head_ref || github.ref_name }}
           commit_author: "ABsUP <ABsUP@users.noreply.github.com>"
