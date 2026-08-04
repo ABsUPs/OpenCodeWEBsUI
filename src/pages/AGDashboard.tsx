@@ -188,7 +188,7 @@ export default function AGDashboard() {
 
             <h1 className="text-4xl font-extrabold tracking-tight">
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                OpenCodeWEBsAG
+                OpenCodeWEB
               </span>
             </h1>
             <p className="mt-3 text-slate-400">
