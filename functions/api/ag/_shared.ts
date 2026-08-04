@@ -11,6 +11,8 @@ export interface Env {
   GITHUB_APP_SLUG?: string;
   /** Optional service binding to the opencodewebsag-worker for dashboard proxy */
   AG_WORKER?: Fetcher;
+  /** Shared secret used to authenticate direct calls to the AG worker */
+  INTERNAL_GATEWAY_TOKEN?: string;
 }
 
 export function json(data: unknown, status = 200): Response {
